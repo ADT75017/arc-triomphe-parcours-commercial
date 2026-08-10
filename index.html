@@ -4,123 +4,104 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Parcours commercial - Arc de Triomphe Autos</title>
-<meta name="description" content="Bibliothèque de modèles d'emails organisée par étape du parcours client.">
+<meta name="description" content="Frise des modeles d'emails, etape par etape.">
 
 <!-- ==========================================================================
      ARC DE TRIOMPHE AUTOS - Parcours commercial
-     Application interne de gestion des modèles d'emails commerciaux.
+     Outil de CONSULTATION. Le commercial ouvre une etape, lit le modele,
+     le copie, puis le colle dans Outlook ou il personnalise et envoie.
 
-     100 % côté navigateur : aucun serveur, aucune base de données, aucune API.
+     100 % cote navigateur : aucun serveur, aucune base de donnees, aucune API.
      Il suffit d'ouvrir ce fichier dans un navigateur.
 
- ---------------------------------------------------------------------------
-     OÙ MODIFIER LES ÉTAPES ?
-     Uniquement dans le bloc <script id="templates-data"> ci-dessous.
-     Ajouter, supprimer ou réordonner une étape ne demande AUCUNE modification
+     ---------------------------------------------------------------------------
+     OU MODIFIER LES ETAPES ?
+     Uniquement dans le bloc <script id="templates-data"> en bas du fichier.
+     Ajouter, supprimer ou reordonner une etape ne demande AUCUNE modification
      du CSS ou du JavaScript : la frise se reconstruit toute seule.
-
-     Si le fichier est servi en HTTP (Vercel, intranet…), l'application tente
-     d'abord de charger le fichier externe templates.json ; s'il est absent ou
-     si la page est ouverte en local (file://), elle utilise le bloc intégré.
      ========================================================================== -->
 
 <!-- --------------------------------------------------------------------------
      TYPOGRAPHIE - point de configuration unique
      Pour aligner l'outil sur une autre police, remplacez le nom dans le lien
-     Google Fonts ci-dessous ET dans la variable --font-sans (section 1 du CSS).
-     Rien d'autre à modifier. Hors ligne, la police système prend le relais.
- -------------------------------------------------------------------------- -->
+     Google Fonts ci-dessous ET dans --font-sans. Hors ligne, la police
+     systeme prend automatiquement le relais.
+     -------------------------------------------------------------------------- -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 /* ==========================================================================
-   1. DESIGN SYSTEM - jetons de conception
-   Grille d'espacement de 8 px. Palette sobre, une seule couleur d'accent
-   neutre (l'encre) ; la couleur vient uniquement des catégories d'étapes.
+   1. DESIGN SYSTEM
+   Grille d'espacement de 8 px. Deux teintes de marque : vert profond pour
+   les actions, or pour les details. La couleur des etapes vient du JSON.
    ========================================================================== */
 :root{
-  /* Typographie - le premier nom est celui de la police du site.
-     Les suivants sont les replis système en cas d'absence de réseau. */
- --font-sans: "Inter", "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
- --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --font-sans: "Inter", "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
-  /* Échelle typographique */
- --text-xs: .75rem;    /* 12px - méta, légendes */
- --text-sm: .8125rem;  /* 13px - libellés, badges */
- --text-md: .875rem;   /* 14px - corps */
- --text-lg: 1rem;      /* 16px - titres de carte */
- --text-xl: 1.375rem;  /* 22px - titre de tiroir */
- --text-2xl: 1.75rem;  /* 28px - chiffres de statistiques */
+  --text-xs: .75rem;   --text-sm: .8125rem;  --text-md: .875rem;
+  --text-lg: 1rem;     --text-xl: 1.375rem;
 
-  /* Espacements (grille de 8) */
- --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px;
- --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
 
-  /* Rayons */
- --r-sm: 6px; --r-md: 10px; --r-lg: 14px; --r-full: 999px;
+  --r-sm: 6px; --r-md: 10px; --r-lg: 14px; --r-full: 999px;
 
-  /* Durées d'animation */
- --t-fast: 160ms; --t-base: 220ms; --t-slow: 300ms;
- --ease: cubic-bezier(.32,.72,0,1);
+  --t-fast: 160ms; --t-base: 220ms; --t-slow: 300ms;
+  --ease: cubic-bezier(.32,.72,0,1);
 
-  /* --------------------------------------------------------------------
-     COULEURS DE MARQUE - thème clair
-     Deux teintes portent l'identité : un vert profond pour les actions et
-     un or pour les détails de prestige. Pour ajuster la marque, il suffit
-     de modifier --vert et --or (et leurs équivalents du thème sombre).
- -------------------------------------------------------------------- */
- --vert: #0F3B2C;         /* vert profond - actions principales */
- --or: #B08D33;           /* or lisible en texte sur fond clair */
- --or-plein: #C9A24A;     /* or plus lumineux - filets et remplissages */
+  /* Couleurs de marque - thème clair */
+  --vert: #0F3B2C;
+  --or: #B08D33;
+  --or-plein: #C9A24A;
 
- --bg: #FAFAF8;
- --surface: #FFFFFF;
- --surface-2: #F4F5F2;
- --surface-3: #EAECE7;
- --line: #E2E4DE;
- --line-strong: #C7CCC3;
- --text: #121A16;
- --text-2: #566159;
- --text-3: #8A948B;
- --ink: var(--vert);      /* fond des boutons principaux */
- --ink-text: #FFFFFF;     /* texte sur --ink */
- --focus: #1E7A5A;
- --mark: #F3E2A9;
- --mark-text: #4A3708;
- --shadow-1: 0 1px 2px rgba(15,35,26,.06);
- --shadow-2: 0 4px 16px -6px rgba(15,35,26,.16), 0 1px 3px rgba(15,35,26,.06);
- --shadow-3: 0 24px 64px -16px rgba(9,20,15,.26);
+  --bg: #FAFAF8;
+  --surface: #FFFFFF;
+  --surface-2: #F4F5F2;
+  --surface-3: #EAECE7;
+  --line: #E2E4DE;
+  --line-strong: #C7CCC3;
+  --text: #121A16;
+  --text-2: #566159;
+  --text-3: #8A948B;
+  --ink: var(--vert);
+  --ink-text: #FFFFFF;
+  --focus: #1E7A5A;
+  --mark: #F3E2A9;
+  --mark-text: #4A3708;
+  --shadow-1: 0 1px 2px rgba(15,35,26,.06);
+  --shadow-2: 0 6px 20px -8px rgba(15,35,26,.18), 0 1px 3px rgba(15,35,26,.06);
+  --shadow-3: 0 24px 64px -16px rgba(9,20,15,.26);
 }
 
-/* Couleurs - thème sombre */
 [data-theme="dark"]{
- --vert: #2E9B72;
- --or: #D9B86A;
- --or-plein: #D9B86A;
+  --vert: #2E9B72;
+  --or: #D9B86A;
+  --or-plein: #D9B86A;
 
- --bg: #090C0A;
- --surface: #101512;
- --surface-2: #171D19;
- --surface-3: #202822;
- --line: #232B26;
- --line-strong: #3A443D;
- --text: #E9EEEA;
- --text-2: #98A39B;
- --text-3: #6C766F;
- --ink: var(--vert);
- --ink-text: #04140D;
- --focus: #3FBE8C;
- --mark: #6B5312;
- --mark-text: #FBEFC8;
- --shadow-1: 0 1px 2px rgba(0,0,0,.5);
- --shadow-2: 0 4px 16px -6px rgba(0,0,0,.65), 0 1px 3px rgba(0,0,0,.45);
- --shadow-3: 0 24px 64px -16px rgba(0,0,0,.75);
+  --bg: #090C0A;
+  --surface: #101512;
+  --surface-2: #171D19;
+  --surface-3: #202822;
+  --line: #232B26;
+  --line-strong: #3A443D;
+  --text: #E9EEEA;
+  --text-2: #98A39B;
+  --text-3: #6C766F;
+  --ink: var(--vert);
+  --ink-text: #04140D;
+  --focus: #3FBE8C;
+  --mark: #6B5312;
+  --mark-text: #FBEFC8;
+  --shadow-1: 0 1px 2px rgba(0,0,0,.5);
+  --shadow-2: 0 6px 20px -8px rgba(0,0,0,.65), 0 1px 3px rgba(0,0,0,.45);
+  --shadow-3: 0 24px 64px -16px rgba(0,0,0,.75);
 }
 
-/* Palette des catégories : teintes sourdes, accordées au vert et à l'or.
-   Ajouter une couleur = ajouter un bloc ici, puis l'appeler dans le JSON. */
+/* Palette des categories. Ajouter une couleur = ajouter un bloc ici,
+   puis l'appeler dans le champ "couleur" du JSON. */
 [data-couleur="blue"]   { --c: #1F5F8B; }
 [data-couleur="indigo"] { --c: #414E8C; }
 [data-couleur="violet"] { --c: #6B4A8A; }
@@ -146,67 +127,50 @@ html{ -webkit-text-size-adjust:100%; }
 body{
   margin:0; background:var(--bg); color:var(--text);
   font-family:var(--font-sans); font-size:var(--text-md); line-height:1.55;
- -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
   transition:background var(--t-base) var(--ease), color var(--t-base) var(--ease);
 }
-h1,h2,h3,p,ul,ol,figure{ margin:0; }
+h1,h2,h3,p,ul,ol,figure,pre{ margin:0; }
 ul,ol{ list-style:none; padding:0; }
-button,input,textarea,select{ font:inherit; color:inherit; }
+button,input,textarea{ font:inherit; color:inherit; }
 button{ background:none; border:0; cursor:pointer; }
 svg{ display:block; }
-a{ color:inherit; }
 
-:focus-visible{
-  outline:2px solid var(--focus); outline-offset:2px; border-radius:var(--r-sm);
-}
+:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; border-radius:var(--r-sm); }
 .sr-only{
   position:absolute; width:1px; height:1px; padding:0; margin:-1px;
   overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
 }
-.wrap{ width:100%; max-width:1080px; margin:0 auto; padding:0 var(--s-5); }
-
-mark{
-  background:var(--mark); color:var(--mark-text);
-  border-radius:3px; padding:0 2px;
-}
+.wrap{ width:100%; max-width:1120px; margin:0 auto; padding:0 var(--s-5); }
+mark{ background:var(--mark); color:var(--mark-text); border-radius:3px; padding:0 2px; }
 
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
 }
 
 /* ==========================================================================
-   3. EN-TÊTE
+   3. EN-TETE
    ========================================================================== */
 .header{
   position:sticky; top:0; z-index:40;
-  background:color-mix(in srgb, var(--bg) 86%, transparent);
+  background:color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter:saturate(180%) blur(12px);
   border-bottom:1px solid var(--line);
 }
-.header__inner{
-  display:flex; align-items:center; gap:var(--s-4);
-  height:60px;
-}
+.header__inner{ display:flex; align-items:center; gap:var(--s-4); height:64px; }
 .brand{ display:flex; align-items:center; gap:var(--s-3); min-width:0; }
-/* Deux versions du logo : la bonne s'affiche selon le thème actif. */
-.brand__logo{
-  height:32px; width:auto; flex:none; display:block;
-  image-rendering:auto;
-}
+.brand__logo{ height:34px; width:auto; flex:none; display:block; }
 .brand__logo--sombre{ display:none; }
 [data-theme="dark"] .brand__logo--clair{ display:none; }
 [data-theme="dark"] .brand__logo--sombre{ display:block; }
-.brand__rule{
-  width:1px; height:24px; background:var(--or-plein); flex:none; opacity:.7;
-}
+.brand__rule{ width:1px; height:24px; background:var(--or-plein); opacity:.7; flex:none; }
 .brand__sub{
   font-size:var(--text-xs); color:var(--text-3); font-weight:500;
   text-transform:uppercase; letter-spacing:.1em; white-space:nowrap;
 }
 .header__spacer{ flex:1; }
 
-/* Champ de recherche */
-.search{ position:relative; width:min(360px, 42vw); }
+.search{ position:relative; width:min(340px, 42vw); }
 .search__icon{
   position:absolute; left:10px; top:50%; transform:translateY(-50%);
   width:16px; height:16px; color:var(--text-3); pointer-events:none;
@@ -218,22 +182,20 @@ mark{
   transition:border-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
 }
 .search__input::placeholder{ color:var(--text-3); }
-.search__input:focus{ outline:none; border-color:var(--line-strong); box-shadow:0 0 0 3px color-mix(in srgb, var(--focus) 18%, transparent); }
-.search__kbd{
-  position:absolute; right:8px; top:50%; transform:translateY(-50%);
-  display:flex; gap:2px; pointer-events:none;
+.search__input:focus{
+  outline:none; border-color:var(--line-strong);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--focus) 18%, transparent);
 }
+.search__kbd{ position:absolute; right:8px; top:50%; transform:translateY(-50%); display:flex; gap:2px; pointer-events:none; }
 kbd{
   font-family:var(--font-mono); font-size:11px; line-height:1;
   padding:3px 5px; border-radius:4px;
   background:var(--surface-2); border:1px solid var(--line); color:var(--text-3);
 }
 
-/* Boutons d'icône */
 .icon-btn{
   width:36px; height:36px; flex:none; border-radius:var(--r-md);
   display:grid; place-items:center; color:var(--text-2);
-  border:1px solid transparent;
   transition:background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
 }
 .icon-btn:hover{ background:var(--surface-2); color:var(--text); }
@@ -243,186 +205,141 @@ kbd{
 [data-theme="dark"] .icon-btn .icon-moon{ display:block; }
 
 /* ==========================================================================
-   4. TABLEAU DE BORD (statistiques + progression)
+   4. FRISE HORIZONTALE
+   La frise se lit de gauche a droite. Chaque etape occupe une colonne :
+   un troncon d'axe en forme de fleche, un noeud rond centre dessus, et une
+   carte placee au-dessus ou en dessous en alternance.
    ========================================================================== */
-.dash{ padding:var(--s-6) 0 var(--s-5); }
-.dash__title{
-  font-size:var(--text-2xl); font-weight:600; letter-spacing:-.03em; line-height:1.2;
-  margin-bottom:var(--s-2);
-}
-.dash__lede{ color:var(--text-2); max-width:56ch; margin-bottom:var(--s-5); }
+main{ padding:var(--s-6) 0 var(--s-8); }
 
-.stats{
-  display:grid; grid-template-columns:repeat(5, 1fr); gap:var(--s-3);
-  margin-bottom:var(--s-5);
-}
-.stat{
-  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
-  padding:var(--s-3) var(--s-4); box-shadow:var(--shadow-1); min-width:0;
-}
-.stat__label{
-  font-family:var(--font-mono); font-size:var(--text-xs); color:var(--or);
-  text-transform:uppercase; letter-spacing:.07em; margin-bottom:var(--s-1);
-}
-.stat__value{
-  font-size:var(--text-xl); font-weight:600; letter-spacing:-.02em;
-  font-variant-numeric:tabular-nums; line-height:1.2;
-}
-.stat__value--text{
-  font-size:var(--text-md); font-weight:500; letter-spacing:0;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
+.piste-zone{ position:relative; }
 
-/* Barre de progression */
-.progress{
-  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
-  padding:var(--s-4); box-shadow:var(--shadow-1);
+/* Fondus lateraux : signalent qu'il reste des etapes hors champ */
+.piste-zone::before, .piste-zone::after{
+  content:""; position:absolute; top:0; bottom:var(--s-4); width:64px;
+  z-index:3; pointer-events:none;
+  transition:opacity var(--t-base) var(--ease);
 }
-.progress__head{
-  display:flex; align-items:baseline; justify-content:space-between;
-  gap:var(--s-3); margin-bottom:var(--s-3);
-}
-.progress__label{ font-size:var(--text-sm); font-weight:500; }
-.progress__count{
-  font-family:var(--font-mono); font-size:var(--text-sm); color:var(--text-3);
-  font-variant-numeric:tabular-nums;
-}
-.progress__track{
-  height:6px; border-radius:var(--r-full); background:var(--surface-3); overflow:hidden;
-}
-.progress__fill{
-  height:100%; width:0; border-radius:var(--r-full);
-  background:linear-gradient(90deg, var(--vert), var(--or-plein));
-  transition:width var(--t-slow) var(--ease);
-}
-.progress__hint{
-  margin-top:var(--s-3); font-size:var(--text-xs); color:var(--text-3);
-}
+.piste-zone::before{ left:0;  background:linear-gradient(90deg,  var(--bg), transparent); }
+.piste-zone::after { right:0; background:linear-gradient(270deg, var(--bg), transparent); }
+.piste-zone[data-debut="true"]::before{ opacity:0; }
+.piste-zone[data-fin="true"]::after{ opacity:0; }
 
-/* ==========================================================================
-   5. BARRE D'OUTILS - filtres et consultés récemment
-   ========================================================================== */
-.toolbar{
-  position:sticky; top:60px; z-index:30;
-  padding:var(--s-3) 0; margin-bottom:var(--s-2);
-  background:color-mix(in srgb, var(--bg) 90%, transparent);
-  backdrop-filter:blur(8px);
-}
-.chips{ display:flex; flex-wrap:wrap; gap:var(--s-2); align-items:center; }
-.chip{
-  display:inline-flex; align-items:center; gap:6px;
-  height:30px; padding:0 var(--s-3); border-radius:var(--r-full);
-  background:var(--surface); border:1px solid var(--line);
-  font-size:var(--text-sm); color:var(--text-2); white-space:nowrap;
-  transition:background var(--t-fast) var(--ease), color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
-}
-.chip:hover{ border-color:var(--line-strong); color:var(--text); }
-.chip[aria-pressed="true"]{
-  background:var(--ink); border-color:var(--ink); color:var(--ink-text);
-}
-.chip svg{ width:14px; height:14px; }
-.chip__count{
-  font-family:var(--font-mono); font-size:11px; color:var(--text-3);
-  font-variant-numeric:tabular-nums;
-}
-.chip[aria-pressed="true"] .chip__count{ color:inherit; opacity:.7; }
-.chip--sep{ width:1px; height:20px; background:var(--line); margin:0 var(--s-1); }
-
-.recent{ display:flex; align-items:center; gap:var(--s-2); flex-wrap:wrap; padding-bottom:var(--s-4); }
-.recent__label{
-  font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-3);
-  text-transform:uppercase; letter-spacing:.07em;
-}
-.recent__item{
-  display:inline-flex; align-items:center; gap:6px;
-  height:26px; padding:0 10px; border-radius:var(--r-full);
-  background:var(--surface-2); font-size:var(--text-xs); color:var(--text-2);
-  transition:background var(--t-fast) var(--ease);
-}
-.recent__item:hover{ background:var(--surface-3); color:var(--text); }
-.recent__item::before{
-  content:""; width:6px; height:6px; border-radius:50%; background:var(--c, var(--text-3)); flex:none;
-}
-
-/* ==========================================================================
-   6. FRISE CHRONOLOGIQUE
-   ========================================================================== */
-.timeline{ position:relative; padding-bottom:var(--s-8); }
-/* Rail vertical continu, dessiné derrière les nœuds */
-.timeline::before{
-  content:""; position:absolute; left:19px; top:14px; bottom:14px; width:2px;
-  background:linear-gradient(180deg, var(--line), var(--line) 88%, color-mix(in srgb, var(--or-plein) 55%, transparent));
-  border-radius:1px;
-}
-.timeline.is-filtered::before{ display:none; }
-
-.step{
-  position:relative; display:grid;
-  grid-template-columns:40px 1fr; gap:var(--s-4);
-  padding-bottom:var(--s-3);
-}
-/* Nœud de la frise : numéro dans un cercle */
-.step__node{
-  position:relative; z-index:1;
+/* Boutons de defilement */
+.piste-nav{
+  position:absolute; top:50%; transform:translateY(-50%); z-index:4;
   width:40px; height:40px; border-radius:50%;
   display:grid; place-items:center;
-  background:var(--surface); border:2px solid var(--line);
-  font-family:var(--font-mono); font-size:var(--text-sm); font-weight:600;
-  color:var(--text-3); font-variant-numeric:tabular-nums;
-  transition:border-color var(--t-base) var(--ease), color var(--t-base) var(--ease), background var(--t-base) var(--ease);
+  background:var(--surface); border:1px solid var(--line);
+  color:var(--text-2); box-shadow:var(--shadow-2);
+  transition:opacity var(--t-base) var(--ease), background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
 }
-.step[data-fait="true"] .step__node{
-  background:var(--c); border-color:var(--c); color:#fff;
-}
-[data-theme="dark"] .step[data-fait="true"] .step__node{ color:#0C0E11; }
-.step[data-fait="true"] .step__node span{ display:none; }
-.step__node svg{ width:18px; height:18px; display:none; }
-.step[data-fait="true"] .step__node svg{ display:block; }
+.piste-nav:hover{ background:var(--surface-2); color:var(--text); }
+.piste-nav svg{ width:18px; height:18px; }
+.piste-nav--prec{ left:-8px; }
+.piste-nav--suiv{ right:-8px; }
+.piste-zone[data-debut="true"] .piste-nav--prec,
+.piste-zone[data-fin="true"]   .piste-nav--suiv{ opacity:0; pointer-events:none; }
 
-/* Étape en cours : première étape non réalisée, signalée par un anneau doré.
-   C'est le repère « vous êtes ici » du parcours. */
-.step[data-courant="true"] .step__node{
-  border-color:var(--or-plein);
-  color:var(--or);
-  box-shadow:0 0 0 4px color-mix(in srgb, var(--or-plein) 16%, transparent);
+/* Piste defilante */
+.piste{
+  overflow-x:auto; overflow-y:hidden;
+  scroll-snap-type:x proximity; scroll-behavior:smooth;
+  scrollbar-width:thin; padding-bottom:var(--s-3);
 }
-.step[data-courant="true"] .step__card{
-  border-color:color-mix(in srgb, var(--or-plein) 45%, var(--line));
-}
-.step[data-courant="true"] .step__title::after{
-  content:"En cours";
-  display:inline-block; vertical-align:middle;
-  margin-left:var(--s-2); padding:1px 7px;
-  border-radius:var(--r-full);
-  background:color-mix(in srgb, var(--or-plein) 16%, transparent);
-  color:var(--or);
-  font-size:var(--text-xs); font-weight:600;
-  letter-spacing:.04em; text-transform:uppercase;
-}
-/* Étape terminée : recul visuel discret, sans la rendre illisible. */
-.step[data-fait="true"] .step__title,
-.step[data-fait="true"] .step__desc{ opacity:.62; }
+.piste::-webkit-scrollbar{ height:8px; }
+.piste::-webkit-scrollbar-track{ background:transparent; }
+.piste::-webkit-scrollbar-thumb{ background:var(--line-strong); border-radius:4px; }
 
-.step__card{
-  position:relative;
+.frise{
+  display:grid; grid-auto-flow:column; grid-auto-columns:328px;
+  min-height:530px; padding:var(--s-2) 0;
+}
+
+/* Une colonne par etape : haut / axe / bas */
+.etape{
+  position:relative; scroll-snap-align:center;
+  display:grid; grid-template-rows:1fr 96px 1fr;
+  padding:0 var(--s-2);
+}
+
+/* Troncon d'axe en forme de fleche, dans la couleur de l'etape */
+.etape__voie{
+  grid-row:2; align-self:center; height:24px; margin-right:4px;
+  background:color-mix(in srgb, var(--c) 16%, transparent);
+  clip-path:polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%);
+}
+.etape:last-child .etape__voie{
+  clip-path:polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Noeud rond centre sur l'axe */
+.etape__noeud{
+  grid-row:2; grid-column:1; z-index:2;
+  justify-self:center; align-self:center;
+  width:64px; height:64px; border-radius:50%;
+  display:grid; place-items:center;
+  background:var(--c); color:#fff;
+  border:4px solid var(--bg);
+  box-shadow:0 0 0 1px color-mix(in srgb, var(--c) 30%, transparent);
+  transition:transform var(--t-base) var(--ease), box-shadow var(--t-base) var(--ease);
+}
+[data-theme="dark"] .etape__noeud{ color:#08110D; }
+.etape__noeud svg{ width:26px; height:26px; }
+
+/* Carte au-dessus pour les etapes impaires, en dessous pour les paires */
+.etape__carte{
+  position:relative; grid-column:1;
   background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg);
   box-shadow:var(--shadow-1);
   transition:transform var(--t-base) var(--ease), box-shadow var(--t-base) var(--ease), border-color var(--t-base) var(--ease);
 }
-.step__card:hover{
-  transform:translateY(-2px); box-shadow:var(--shadow-2); border-color:var(--line-strong);
-}
-.step__card:focus-within{ border-color:var(--line-strong); }
+.etape--haut .etape__carte{ grid-row:1; align-self:end;   margin-bottom:20px; }
+.etape--bas  .etape__carte{ grid-row:3; align-self:start; margin-top:20px; }
 
-/* Zone cliquable principale */
-.step__main{
-  display:block; width:100%; text-align:left;
-  padding:var(--s-4) 156px var(--s-4) var(--s-4);
-  border-radius:var(--r-lg);
+/* Trait de liaison entre la carte et le noeud */
+.etape__carte::after{
+  content:""; position:absolute; left:50%; width:2px; height:20px;
+  background:var(--line); transform:translateX(-1px);
 }
-.step__meta{
-  display:flex; align-items:center; gap:var(--s-2); flex-wrap:wrap;
+.etape--haut .etape__carte::after{ top:100%; }
+.etape--bas  .etape__carte::after{ bottom:100%; }
+
+.etape__carte:hover{
+  transform:translateY(-2px); box-shadow:var(--shadow-2);
+  border-color:color-mix(in srgb, var(--c) 40%, var(--line));
+}
+.etape:hover .etape__noeud{
+  transform:scale(1.06);
+  box-shadow:0 0 0 6px color-mix(in srgb, var(--c) 14%, transparent);
+}
+
+.etape__ouvrir{
+  display:block; width:100%; text-align:left;
+  padding:var(--s-4); border-radius:var(--r-lg);
+}
+.etape__num{
+  font-family:var(--font-mono); font-size:1.75rem; font-weight:700;
+  letter-spacing:-.04em; line-height:1; color:var(--c);
+  font-variant-numeric:tabular-nums;
+}
+.etape__entete{
+  display:flex; align-items:baseline; gap:var(--s-3); flex-wrap:wrap;
   margin-bottom:var(--s-2);
+}
+.etape__temps{
+  font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-3);
+  letter-spacing:.02em;
+}
+.etape__titre{
+  font-size:var(--text-lg); font-weight:600; letter-spacing:-.015em;
+  line-height:1.35; margin-bottom:var(--s-1);
+}
+.etape__desc{ color:var(--text-2); font-size:var(--text-sm); }
+
+.etape__pied{
+  display:flex; align-items:center; gap:var(--s-2); flex-wrap:wrap;
+  padding:0 var(--s-4) var(--s-3);
 }
 .badge{
   display:inline-flex; align-items:center; gap:5px;
@@ -430,180 +347,26 @@ kbd{
   background:color-mix(in srgb, var(--c) 12%, transparent);
   color:var(--c); font-size:var(--text-xs); font-weight:500; white-space:nowrap;
 }
-.badge svg{ width:12px; height:12px; }
-.tag{
-  font-size:var(--text-xs); color:var(--text-3);
-}
-.tag--time{
-  font-family:var(--font-mono); letter-spacing:.02em;
-}
-.dot-sep{ color:var(--line-strong); }
+.tag{ font-size:var(--text-xs); color:var(--text-3); }
+.pied__spacer{ flex:1; }
 
-.step__title{
-  font-size:var(--text-lg); font-weight:600; letter-spacing:-.015em;
-  line-height:1.35; margin-bottom:var(--s-1);
-}
-.step__desc{ color:var(--text-2); font-size:var(--text-md); }
-.step__vars{
-  display:flex; flex-wrap:wrap; gap:var(--s-1); margin-top:var(--s-3);
-}
-.var-chip{
-  font-family:var(--font-mono); font-size:11px; color:var(--text-3);
-  background:var(--surface-2); border-radius:4px; padding:2px 6px;
-}
-
-/* Boutons d'action de la carte */
-.step__tools{
-  position:absolute; top:var(--s-3); right:var(--s-3);
-  display:flex; gap:var(--s-1);
-}
 .tool{
-  width:32px; height:32px; border-radius:var(--r-sm);
+  width:28px; height:28px; border-radius:var(--r-sm);
   display:grid; place-items:center; color:var(--text-3);
   transition:background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
 }
 .tool:hover{ background:var(--surface-2); color:var(--text); }
-.tool svg{ width:16px; height:16px; }
-.tool[aria-pressed="true"]{ color:var(--c); }
-.tool--fav[aria-pressed="true"]{ color:var(--or); }
-.tool--fav[aria-pressed="true"] .icon-star-o{ display:none; }
-.tool--fav .icon-star-f{ display:none; }
-.tool--fav[aria-pressed="true"] .icon-star-f{ display:block; }
+.tool svg{ width:15px; height:15px; }
+
+/* Rappel de lecture sous la piste */
+.piste-aide{
+  display:flex; align-items:center; gap:var(--s-2);
+  margin-top:var(--s-3); font-size:var(--text-xs); color:var(--text-3);
+}
+.piste-aide svg{ width:14px; height:14px; flex:none; }
 
 /* ==========================================================================
-   5 bis. ONGLETS DE VUE - parcours / messages envoyés
-   ========================================================================== */
-.viewtabs{
-  display:inline-flex; gap:var(--s-1); padding:3px; margin-bottom:var(--s-3);
-  background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r-md);
-}
-.viewtab{
-  display:inline-flex; align-items:center; gap:var(--s-2);
-  height:30px; padding:0 var(--s-3); border-radius:var(--r-sm);
-  font-size:var(--text-sm); font-weight:500; color:var(--text-2); white-space:nowrap;
-  transition:background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
-}
-.viewtab svg{ width:15px; height:15px; }
-.viewtab:hover{ color:var(--text); }
-.viewtab[aria-selected="true"]{
-  background:var(--surface); color:var(--text); box-shadow:var(--shadow-1);
-}
-.viewtab__count{
-  font-family:var(--font-mono); font-size:11px;
-  padding:1px 6px; border-radius:var(--r-full);
-  background:color-mix(in srgb, var(--or-plein) 20%, transparent); color:var(--or);
-  font-variant-numeric:tabular-nums;
-}
-
-/* ==========================================================================
-   5 ter. ARCHIVE DES MESSAGES ENVOYÉS
-   ========================================================================== */
-.archive__head{
-  display:flex; align-items:center; gap:var(--s-3); flex-wrap:wrap;
-  margin-bottom:var(--s-4);
-}
-.archive__head .search{ width:min(320px, 100%); }
-.archive__head .header__spacer{ flex:1; }
-
-.envoi{
-  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
-  box-shadow:var(--shadow-1); margin-bottom:var(--s-2); overflow:hidden;
-}
-.envoi__head{
-  display:flex; align-items:flex-start; gap:var(--s-3);
-  width:100%; padding:var(--s-3) var(--s-4); text-align:left;
-}
-.envoi__head:hover{ background:var(--surface-2); }
-.envoi__date{
-  font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-3);
-  white-space:nowrap; padding-top:2px; font-variant-numeric:tabular-nums;
-}
-.envoi__corps{ flex:1; min-width:0; }
-.envoi__objet{
-  font-size:var(--text-md); font-weight:500; line-height:1.4;
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-}
-.envoi__meta{
-  display:flex; align-items:center; gap:var(--s-2); flex-wrap:wrap;
-  margin-top:2px; font-size:var(--text-xs); color:var(--text-3);
-}
-.envoi__canal{
-  display:inline-flex; align-items:center; height:18px; padding:0 6px;
-  border-radius:var(--r-sm); font-size:11px;
-  background:color-mix(in srgb, var(--c, var(--text-3)) 14%, transparent);
-  color:var(--c, var(--text-2));
-}
-.envoi__detail{
-  border-top:1px solid var(--line); padding:var(--s-4);
-  background:var(--surface-2);
-}
-.envoi__texte{
-  font-size:var(--text-sm); line-height:1.65; white-space:pre-wrap;
-  color:var(--text-2); margin-bottom:var(--s-3);
-  max-height:320px; overflow-y:auto;
-}
-.envoi__actions{ display:flex; gap:var(--s-2); flex-wrap:wrap; }
-
-/* ==========================================================================
-   5 quater. MENU D'ENVOI
-   ========================================================================== */
-.menu-wrap{ position:relative; }
-.menu{
-  position:absolute; bottom:calc(100% + 8px); left:0; z-index:70;
-  min-width:260px; padding:var(--s-2);
-  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
-  box-shadow:var(--shadow-3);
-}
-.menu[hidden]{ display:none; }
-.menu__titre{
-  font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-3);
-  text-transform:uppercase; letter-spacing:.08em;
-  padding:var(--s-2) var(--s-2) var(--s-1);
-}
-.menu__item{
-  display:flex; flex-direction:column; align-items:flex-start; gap:1px;
-  width:100%; padding:8px var(--s-2); border-radius:var(--r-sm);
-  text-align:left; font-size:var(--text-md);
-  transition:background var(--t-fast) var(--ease);
-}
-.menu__item:hover{ background:var(--surface-2); }
-.menu__item small{ font-size:var(--text-xs); color:var(--text-3); line-height:1.4; }
-.menu__sep{ height:1px; background:var(--line); margin:var(--s-2) 0; }
-
-/* Bandeau d'avertissement : étapes ignorées mais application utilisable */
-.notice{
-  display:flex; align-items:flex-start; gap:var(--s-3);
-  padding:var(--s-3) var(--s-4); margin-bottom:var(--s-4);
-  background:var(--surface); border:1px solid var(--line);
-  border-left:3px solid var(--or-plein); border-radius:var(--r-md);
-  font-size:var(--text-sm); color:var(--text-2);
-}
-.notice__body{ flex:1; min-width:0; }
-.notice strong{ color:var(--text); font-weight:600; display:block; margin-bottom:var(--s-1); }
-.notice ul li{
-  font-family:var(--font-mono); font-size:var(--text-xs);
-  padding:2px 0; word-break:break-word;
-}
-
-/* États vides et erreurs */
-.state{
-  text-align:center; padding:var(--s-8) var(--s-4); color:var(--text-2);
-}
-.state h2{ font-size:var(--text-lg); font-weight:600; color:var(--text); margin-bottom:var(--s-2); }
-.state p{ font-size:var(--text-md); max-width:44ch; margin:0 auto var(--s-4); }
-.state code{
-  font-family:var(--font-mono); font-size:var(--text-sm);
-  background:var(--surface-2); padding:2px 6px; border-radius:4px;
-}
-.state__list{ text-align:left; max-width:520px; margin:0 auto var(--s-4); }
-.state__list li{
-  font-family:var(--font-mono); font-size:var(--text-sm); color:var(--text-2);
-  padding:var(--s-2) var(--s-3); background:var(--surface-2); border-radius:var(--r-sm);
-  margin-bottom:var(--s-1);
-}
-
-/* ==========================================================================
-   7. BOUTONS
+   5. BOUTONS
    ========================================================================== */
 .btn{
   display:inline-flex; align-items:center; justify-content:center; gap:var(--s-2);
@@ -616,18 +379,15 @@ kbd{
 .btn:active{ transform:scale(.985); }
 .btn svg{ width:16px; height:16px; flex:none; }
 .btn--primary{ background:var(--ink); border-color:var(--ink); color:var(--ink-text); }
-.btn--primary:hover{ background:var(--ink); border-color:var(--ink); opacity:.88; }
-.btn--ghost{ border-color:transparent; background:transparent; color:var(--text-2); }
-.btn--ghost:hover{ background:var(--surface-2); color:var(--text); }
+.btn--primary:hover{ background:var(--ink); border-color:var(--ink); opacity:.9; }
 .btn--sm{ height:30px; padding:0 var(--s-3); font-size:var(--text-sm); }
-.btn--block{ width:100%; }
 
 /* ==========================================================================
-   8. TIROIR (drawer)
+   6. TIROIR
    ========================================================================== */
 .scrim{
   position:fixed; inset:0; z-index:50;
-  background:rgba(10,12,14,.36); backdrop-filter:blur(2px);
+  background:rgba(9,20,15,.4); backdrop-filter:blur(2px);
   opacity:0; visibility:hidden;
   transition:opacity var(--t-base) var(--ease), visibility var(--t-base) var(--ease);
 }
@@ -635,33 +395,23 @@ kbd{
 
 .drawer{
   position:fixed; top:0; right:0; bottom:0; z-index:60;
-  width:min(560px, 100vw);
+  width:min(600px, 100vw);
   background:var(--surface); border-left:1px solid var(--line);
   box-shadow:var(--shadow-3);
   display:flex; flex-direction:column;
-  transform:translateX(101%);
+  transform:translateX(101%); visibility:hidden;
   transition:transform var(--t-slow) var(--ease);
-  visibility:hidden;
 }
 .drawer.is-open{ transform:translateX(0); visibility:visible; }
 
-.drawer__head{
-  padding:var(--s-5) var(--s-5) var(--s-4);
-  border-bottom:1px solid var(--line); flex:none;
-}
-.drawer__eyebrow{
-  display:flex; align-items:center; gap:var(--s-2); margin-bottom:var(--s-2);
-  flex-wrap:wrap;
-}
+.drawer__head{ position:relative; padding:var(--s-5) var(--s-5) var(--s-4); border-bottom:1px solid var(--line); flex:none; }
+.drawer__eyebrow{ display:flex; align-items:center; gap:var(--s-2); margin-bottom:var(--s-2); flex-wrap:wrap; }
 .drawer__num{
   font-family:var(--font-mono); font-size:var(--text-xs); font-weight:600;
   color:var(--or); letter-spacing:.06em;
 }
-.drawer__title{
-  font-size:var(--text-xl); font-weight:600; letter-spacing:-.025em;
-  line-height:1.3; padding-right:var(--s-7);
-}
-.drawer__desc{ color:var(--text-2); margin-top:var(--s-2); font-size:var(--text-md); }
+.drawer__titre{ font-size:var(--text-xl); font-weight:600; letter-spacing:-.025em; line-height:1.3; padding-right:var(--s-7); }
+.drawer__desc{ color:var(--text-2); margin-top:var(--s-2); }
 .drawer__close{
   position:absolute; top:var(--s-4); right:var(--s-4);
   width:32px; height:32px; border-radius:var(--r-sm);
@@ -671,64 +421,71 @@ kbd{
 .drawer__close:hover{ background:var(--surface-2); color:var(--text); }
 .drawer__close svg{ width:18px; height:18px; }
 
-.drawer__body{
-  flex:1; overflow-y:auto; overscroll-behavior:contain;
-  padding:var(--s-5);
-}
+.drawer__body{ flex:1; overflow-y:auto; overscroll-behavior:contain; padding:var(--s-5); }
 .drawer__foot{
-  flex:none; padding:var(--s-4) var(--s-5);
-  border-top:1px solid var(--line); background:var(--surface);
+  flex:none; padding:var(--s-4) var(--s-5); border-top:1px solid var(--line);
   display:flex; gap:var(--s-2); flex-wrap:wrap;
 }
 .drawer__foot .btn--primary{ flex:1; min-width:180px; }
 
-/* Sections du tiroir */
-.field-group{ margin-bottom:var(--s-5); }
-.field-group__head{
-  display:flex; align-items:center; justify-content:space-between;
-  gap:var(--s-3); margin-bottom:var(--s-3);
-}
-.field-group__title{
+.bloc{ margin-bottom:var(--s-5); }
+.bloc__head{ display:flex; align-items:center; justify-content:space-between; gap:var(--s-3); margin-bottom:var(--s-3); }
+.bloc__titre{
   font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-2);
   text-transform:uppercase; letter-spacing:.08em;
   padding-left:var(--s-2); border-left:2px solid var(--or-plein);
 }
-.field-group__note{ font-size:var(--text-xs); color:var(--text-3); }
-.field-group__note[data-manquant="true"]{ color:var(--c); }
 
-.fields{ display:grid; grid-template-columns:repeat(2, 1fr); gap:var(--s-3); }
-.field{ min-width:0; }
-.field label{
-  display:block; font-size:var(--text-xs); color:var(--text-2);
-  margin-bottom:var(--s-1);
+/* Zone de lecture du modele : non modifiable, c'est un outil de consultation */
+.lecture{
+  background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r-sm);
+  padding:var(--s-4); font-family:var(--font-sans); font-size:var(--text-md);
+  line-height:1.7; white-space:pre-wrap; word-break:break-word; color:var(--text);
 }
-.input, .textarea{
-  width:100%; background:var(--surface-2); color:var(--text);
-  border:1px solid var(--line); border-radius:var(--r-sm);
-  padding:8px 10px; font-size:var(--text-md);
-  transition:border-color var(--t-fast) var(--ease), background var(--t-fast) var(--ease);
+.lecture--objet{ font-weight:500; line-height:1.5; }
+/* Variables a remplacer, mises en evidence pour etre reperees d'un coup d'oeil */
+.ph{
+  font-family:var(--font-mono); font-size:.9em;
+  background:color-mix(in srgb, var(--or-plein) 22%, transparent);
+  color:var(--or); border-radius:4px; padding:1px 4px; font-weight:500;
 }
-.input{ height:36px; }
-.input:focus, .textarea:focus{
-  outline:none; background:var(--surface); border-color:var(--line-strong);
-  box-shadow:0 0 0 3px color-mix(in srgb, var(--focus) 16%, transparent);
+.aide{
+  display:flex; gap:var(--s-2); align-items:flex-start;
+  font-size:var(--text-xs); color:var(--text-3); margin-top:var(--s-2);
 }
-.textarea{
-  min-height:340px; resize:vertical; line-height:1.65;
-  font-family:var(--font-sans); white-space:pre-wrap;
-}
-.field--full{ grid-column:1 / -1; }
+.aide svg{ width:14px; height:14px; flex:none; margin-top:2px; }
 
 /* ==========================================================================
-   9. NOTIFICATION (toast)
+   7. ETATS ET NOTIFICATION
    ========================================================================== */
+.state{ text-align:center; padding:var(--s-8) var(--s-4); color:var(--text-2); }
+.state h2{ font-size:var(--text-lg); font-weight:600; color:var(--text); margin-bottom:var(--s-2); }
+.state p{ max-width:44ch; margin:0 auto var(--s-4); }
+.state code{ font-family:var(--font-mono); font-size:var(--text-sm); background:var(--surface-2); padding:2px 6px; border-radius:4px; }
+.state__list{ text-align:left; max-width:520px; margin:0 auto var(--s-4); }
+.state__list li{
+  font-family:var(--font-mono); font-size:var(--text-sm); color:var(--text-2);
+  padding:var(--s-2) var(--s-3); background:var(--surface-2);
+  border-radius:var(--r-sm); margin-bottom:var(--s-1);
+}
+
+.notice{
+  display:flex; align-items:flex-start; gap:var(--s-3);
+  padding:var(--s-3) var(--s-4); margin-bottom:var(--s-5);
+  background:var(--surface); border:1px solid var(--line);
+  border-left:3px solid var(--or-plein); border-radius:var(--r-md);
+  font-size:var(--text-sm); color:var(--text-2);
+}
+.notice__body{ flex:1; min-width:0; }
+.notice strong{ color:var(--text); font-weight:600; display:block; margin-bottom:var(--s-1); }
+.notice ul li{ font-family:var(--font-mono); font-size:var(--text-xs); padding:2px 0; word-break:break-word; }
+
 .toast{
   position:fixed; left:50%; bottom:var(--s-5); z-index:80;
   display:flex; align-items:center; gap:var(--s-2);
   padding:10px var(--s-4); border-radius:var(--r-md);
   background:var(--ink); color:var(--ink-text);
-  font-size:var(--text-md); font-weight:500;
-  box-shadow:var(--shadow-3);
+  font-size:var(--text-md); font-weight:500; box-shadow:var(--shadow-3);
   transform:translate(-50%, 16px); opacity:0; visibility:hidden;
   transition:transform var(--t-base) var(--ease), opacity var(--t-base) var(--ease), visibility var(--t-base) var(--ease);
 }
@@ -736,53 +493,55 @@ kbd{
 .toast svg{ width:16px; height:16px; }
 
 /* ==========================================================================
-   10. RESPONSIVE
+   8. RESPONSIVE
+   La lecture reste horizontale sur tous les formats. Sous 760 px les cartes
+   passent toutes du meme cote pour recuperer de la hauteur, et l'accrochage
+   au defilement devient strict : une etape occupe l'ecran.
    ========================================================================== */
-@media (max-width: 860px){
-  .stats{ grid-template-columns:repeat(2, 1fr); }
-  .step__main{ padding-right:var(--s-4); }
-  .step__tools{ position:static; padding:0 var(--s-3) var(--s-3); justify-content:flex-end; }
-  .search{ width:auto; flex:1; }
-  .brand__sub, .brand__rule{ display:none; }
-  .search__kbd{ display:none; }
-  .search__input{ padding-right:var(--s-3); }
+@media (max-width: 1180px){
+  .piste-nav--prec{ left:0; }
+  .piste-nav--suiv{ right:0; }
 }
-@media (max-width: 640px){
+@media (max-width: 900px){
+  .search{ width:auto; flex:1; }
+  .brand__sub, .brand__rule, .search__kbd{ display:none; }
+  .search__input{ padding-right:var(--s-3); }
+  .frise{ grid-auto-columns:300px; min-height:500px; }
+}
+@media (max-width: 760px){
   .wrap{ padding:0 var(--s-4); }
-  .dash{ padding-top:var(--s-5); }
-  .dash__title{ font-size:1.5rem; }
+  main{ padding-top:var(--s-5); }
+  .piste{ scroll-snap-type:x mandatory; }
+  .frise{ grid-auto-columns:min(88vw, 340px); min-height:0; }
+  /* Toutes les cartes du meme cote : axe en haut, contenu en dessous */
+  .etape{ grid-template-rows:76px auto; }
+  .etape--haut .etape__carte,
+  .etape--bas  .etape__carte{ grid-row:2; align-self:start; margin:20px 0 0; }
+  .etape--haut .etape__carte::after,
+  .etape--bas  .etape__carte::after{ top:auto; bottom:100%; }
+  .etape__noeud{ width:52px; height:52px; border-width:3px; }
+  .etape__noeud svg{ width:21px; height:21px; }
+  .piste-nav{ display:none; }
+  .piste-zone::before, .piste-zone::after{ width:24px; }
   .brand__logo{ height:26px; }
-  .toolbar{ top:60px; }
-  .chips{ flex-wrap:nowrap; overflow-x:auto; padding-bottom:var(--s-2); scrollbar-width:none; }
-  .chips::-webkit-scrollbar{ display:none; }
-  .step{ grid-template-columns:32px 1fr; gap:var(--s-3); }
-  .step__node{ width:32px; height:32px; font-size:var(--text-xs); }
-  .timeline::before{ left:15px; }
-  .step__main{ padding:var(--s-4) var(--s-4) var(--s-4); }
-  .step__tools{ position:static; padding:0 var(--s-3) var(--s-3); justify-content:flex-end; }
-  .fields{ grid-template-columns:1fr; }
   .drawer{ width:100vw; }
-  .drawer__foot .btn--primary{ min-width:0; }
-  .textarea{ min-height:260px; }
 }
 
 /* ==========================================================================
-   11. IMPRESSION
+   9. IMPRESSION
    ========================================================================== */
 @media print{
-  .header, .toolbar, .dash, .timeline, .scrim, .toast, .drawer__foot, .drawer__close, .field-group--form{ display:none !important; }
+  .header, .piste-zone, .piste-aide, .scrim, .toast, .drawer__foot, .drawer__close, .notice{ display:none !important; }
   .drawer{ position:static; transform:none; visibility:visible; width:100%; box-shadow:none; border:0; }
   body{ background:#fff; color:#000; }
-  .textarea{ border:0; background:#fff; min-height:auto; height:auto; }
+  .lecture{ border:0; background:#fff; padding:0; }
 }
 </style>
 </head>
 
 <body>
 
-<!-- ==========================================================================
-     ICÔNES - sprite SVG, aucune ressource externe
-     ========================================================================== -->
+<!-- ICONES - sprite SVG, aucune ressource externe -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
     <g id="i-phone"><path d="M4 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L14 13l5 2v4a1 1 0 0 1-1 1A15 15 0 0 1 3 5a1 1 0 0 1 1-1z"/></g>
@@ -800,29 +559,22 @@ kbd{
     <g id="i-search"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></g>
     <g id="i-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g>
     <g id="i-moon"><path d="M20 14A8.5 8.5 0 0 1 10 4a8.5 8.5 0 1 0 10 10z"/></g>
-    <g id="i-star"><path d="m12 4 2.5 5.2 5.5.8-4 3.9 1 5.6-5-2.7-5 2.7 1-5.6-4-3.9 5.5-.8z"/></g>
     <g id="i-copy"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></g>
     <g id="i-x"><path d="M6 6l12 12M18 6 6 18"/></g>
-    <g id="i-send"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></g>
     <g id="i-print"><path d="M6 9V3h12v6M6 18H4v-6h16v6h-2"/><rect x="8" y="14" width="8" height="7"/></g>
     <g id="i-download"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"/></g>
-    <g id="i-trash"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13M10 11v6M14 11v6"/></g>
-    <g id="i-inbox"><path d="M3 13h5l1.5 3h5L16 13h5"/><path d="M5 5h14l2 8v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5z"/></g>
-    <g id="i-route"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 6h6a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6"/></g>
-    <g id="i-export"><path d="M12 15V3M8 7l4-4 4 4M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></g>
+    <g id="i-info"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></g>
+    <g id="i-chevron-g"><path d="M15 5 8 12l7 7"/></g>
+    <g id="i-chevron-d"><path d="M9 5l7 7-7 7"/></g>
     <g id="i-circle"><circle cx="12" cy="12" r="9"/></g>
   </defs>
 </svg>
 
-<!-- ==========================================================================
-     EN-TÊTE
-     ========================================================================== -->
 <header class="header">
   <div class="wrap header__inner">
     <div class="brand">
-      <!-- Logo officiel : version foncée pour le thème clair, version claire
-           pour le thème sombre. Les images sont intégrées au fichier, aucune
-           ressource externe n'est nécessaire. -->
+      <!-- Logo officiel : version foncee en theme clair, claire en theme sombre.
+           Les images sont integrees au fichier, aucune ressource externe. -->
       <img class="brand__logo brand__logo--clair" alt="Arc de Triomphe Autos"
            src="data:image/png;base64,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">
       <img class="brand__logo brand__logo--sombre" alt="" aria-hidden="true"
@@ -835,138 +587,61 @@ kbd{
 
     <div class="search">
       <svg class="search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-search"/></svg>
-      <label class="sr-only" for="recherche">Rechercher une étape ou un modèle</label>
-      <input class="search__input" id="recherche" type="search" placeholder="Rechercher une étape, un mot du message…" autocomplete="off" spellcheck="false">
+      <label class="sr-only" for="recherche">Rechercher une etape ou un modele</label>
+      <input class="search__input" id="recherche" type="search"
+             placeholder="Rechercher une etape, un mot du message..." autocomplete="off" spellcheck="false">
       <div class="search__kbd" aria-hidden="true"><kbd>Ctrl</kbd><kbd>K</kbd></div>
     </div>
 
-    <button class="icon-btn" id="btn-theme" type="button" aria-label="Changer de thème" title="Changer de thème">
+    <button class="icon-btn" id="btn-theme" type="button" aria-label="Changer de theme" title="Changer de theme">
       <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-sun"/></svg>
       <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-moon"/></svg>
     </button>
   </div>
 </header>
 
-<!-- ==========================================================================
-     CONTENU
-     ========================================================================== -->
-<main class="wrap" id="contenu">
-
-  <section class="dash" aria-labelledby="titre-page">
-    <h1 class="dash__title" id="titre-page">Le bon message, à la bonne étape.</h1>
-    <p class="dash__lede">Repérez où en est votre client, ouvrez l'étape correspondante, complétez les champs et copiez le message. Tout est prêt en moins d'une minute.</p>
-
-    <div class="stats" id="stats">
-      <div class="stat">
-        <div class="stat__label">Étapes</div>
-        <div class="stat__value" id="stat-etapes">-</div>
-      </div>
-      <div class="stat">
-        <div class="stat__label">Favoris</div>
-        <div class="stat__value" id="stat-favoris">-</div>
-      </div>
-      <div class="stat">
-        <div class="stat__label">Catégories</div>
-        <div class="stat__value" id="stat-categories">-</div>
-      </div>
-      <div class="stat">
-        <div class="stat__label">Envoyés</div>
-        <div class="stat__value" id="stat-envois">0</div>
-      </div>
-      <div class="stat">
-        <div class="stat__label">Dernier consulté</div>
-        <div class="stat__value stat__value--text" id="stat-dernier">Aucun</div>
-      </div>
-    </div>
-
-    <div class="progress">
-      <div class="progress__head">
-        <span class="progress__label">Avancement du dossier en cours</span>
-        <span class="progress__count" id="progress-count">0 / 0</span>
-      </div>
-      <div class="progress__track" role="progressbar" aria-labelledby="titre-page" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
-        <div class="progress__fill" id="progress-fill"></div>
-      </div>
-      <p class="progress__hint">Cochez une étape sur sa carte pour la marquer comme faite. L'avancement est enregistré sur ce poste.</p>
-    </div>
-  </section>
-
-  <div class="viewtabs" role="tablist" aria-label="Vue">
-    <button class="viewtab" type="button" role="tab" id="onglet-parcours"
-            data-vue="parcours" aria-selected="true" aria-controls="vue-parcours">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-route"/></svg>
-      Parcours
-    </button>
-    <button class="viewtab" type="button" role="tab" id="onglet-envois"
-            data-vue="envois" aria-selected="false" aria-controls="vue-envois">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-inbox"/></svg>
-      Messages envoyés <span class="viewtab__count" id="onglet-envois-compte">0</span>
-    </button>
-  </div>
-
-  <div class="toolbar" id="barre-filtres">
-    <div class="chips" id="filtres" role="group" aria-label="Filtrer par catégorie"></div>
-  </div>
+<main class="wrap">
+  <h1 class="sr-only">Parcours commercial - modeles d'emails par etape</h1>
 
   <div class="notice" id="avertissement" role="status" hidden>
     <div class="notice__body">
       <strong id="avertissement-titre"></strong>
       <ul id="avertissement-liste"></ul>
     </div>
-    <button class="btn btn--ghost btn--sm" type="button" id="avertissement-fermer">Masquer</button>
   </div>
 
-  <div class="recent" id="recents" hidden>
-    <span class="recent__label">Récents</span>
+  <div class="piste-zone" id="piste-zone" data-debut="true">
+    <button class="piste-nav piste-nav--prec" type="button" id="btn-prec" aria-label="Etapes precedentes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-chevron-g"/></svg>
+    </button>
+    <button class="piste-nav piste-nav--suiv" type="button" id="btn-suiv" aria-label="Etapes suivantes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-chevron-d"/></svg>
+    </button>
+
+    <div class="piste" id="piste" tabindex="0" role="region" aria-label="Frise du parcours commercial">
+      <ol class="frise" id="frise" aria-label="Etapes du parcours commercial"></ol>
+    </div>
   </div>
 
-  <section id="vue-parcours" role="tabpanel" aria-labelledby="onglet-parcours">
-    <ol class="timeline" id="frise" aria-label="Étapes du parcours commercial"></ol>
+  <p class="piste-aide" id="piste-aide">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-info"/></svg>
+    <span>Faites defiler la frise vers la droite pour suivre le parcours, ou utilisez les fleches du clavier.</span>
+  </p>
 
-    <div class="state" id="etat-vide" hidden>
-      <h2>Aucune étape ne correspond</h2>
-      <p>Essayez un autre mot-clé ou retirez les filtres actifs.</p>
-      <button class="btn" type="button" id="btn-reset">Réinitialiser la recherche</button>
-    </div>
-  </section>
-
-  <section id="vue-envois" role="tabpanel" aria-labelledby="onglet-envois" hidden>
-    <div class="archive__head">
-      <div class="search">
-        <svg class="search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-search"/></svg>
-        <label class="sr-only" for="recherche-envois">Rechercher dans les messages envoyés</label>
-        <input class="search__input" id="recherche-envois" type="search"
-               placeholder="Destinataire, objet, contenu..." autocomplete="off">
-      </div>
-      <div class="header__spacer"></div>
-      <button class="btn btn--sm" type="button" id="btn-export-csv">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-export"/></svg>
-        Exporter en CSV
-      </button>
-      <button class="btn btn--sm" type="button" id="btn-export-json">Sauvegarde JSON</button>
-      <button class="btn btn--sm btn--ghost" type="button" id="btn-vider-envois">Tout effacer</button>
-    </div>
-
-    <div id="liste-envois"></div>
-
-    <div class="state" id="etat-envois-vide" hidden>
-      <h2>Aucun message envoyé pour l'instant</h2>
-      <p>Chaque message expédié depuis l'outil est archivé ici automatiquement : date, destinataire, objet et contenu exact.</p>
-    </div>
-  </section>
+  <div class="state" id="etat-vide" hidden>
+    <h2>Aucune etape ne correspond</h2>
+    <p>Essayez un autre mot-cle.</p>
+    <button class="btn" type="button" id="btn-reset">Reinitialiser la recherche</button>
+  </div>
 
   <div class="state" id="etat-erreur" hidden>
-    <h2>Impossible de charger les modèles</h2>
-    <p id="erreur-message">Le fichier de données est introuvable ou mal formé.</p>
+    <h2>Impossible de charger les modeles</h2>
+    <p id="erreur-message">Le fichier de donnees est introuvable ou mal forme.</p>
     <ul class="state__list" id="erreur-details"></ul>
     <p>Corrigez le bloc <code>templates-data</code> dans <code>index.html</code>, puis rechargez la page.</p>
   </div>
-
 </main>
 
-<!-- ==========================================================================
-     TIROIR
-     ========================================================================== -->
 <div class="scrim" id="scrim" hidden></div>
 
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-titre" aria-hidden="true">
@@ -975,51 +650,33 @@ kbd{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-x"/></svg>
     </button>
     <div class="drawer__eyebrow">
-      <span class="drawer__num" id="drawer-num">-</span>
+      <span class="drawer__num" id="drawer-num"></span>
       <span class="badge" id="drawer-badge"></span>
-      <span class="tag tag--time" id="drawer-temps"></span>
+      <span class="tag" id="drawer-temps"></span>
     </div>
-    <h2 class="drawer__title" id="drawer-titre">-</h2>
+    <h2 class="drawer__titre" id="drawer-titre"></h2>
     <p class="drawer__desc" id="drawer-desc"></p>
   </div>
 
   <div class="drawer__body">
-
-    <div class="field-group field-group--form">
-      <div class="field-group__head">
-        <h3 class="field-group__title">Informations à compléter</h3>
-        <span class="field-group__note" id="note-manquants"></span>
+    <div class="bloc">
+      <div class="bloc__head">
+        <h3 class="bloc__titre">Objet</h3>
+        <button class="btn btn--sm" type="button" id="btn-copier-objet">Copier l'objet</button>
       </div>
-      <div class="fields" id="drawer-champs"></div>
+      <div class="lecture lecture--objet" id="drawer-objet"></div>
     </div>
 
-    <div class="field-group">
-      <div class="field-group__head">
-        <h3 class="field-group__title">Destinataire</h3>
-        <span class="field-group__note">Requis pour l'envoi</span>
+    <div class="bloc">
+      <div class="bloc__head">
+        <h3 class="bloc__titre">Message</h3>
       </div>
-      <label class="sr-only" for="drawer-destinataire">Adresse email du destinataire</label>
-      <input class="input" id="drawer-destinataire" type="email"
-             placeholder="client@exemple.fr" autocomplete="off" spellcheck="false">
+      <div class="lecture" id="drawer-texte"></div>
+      <p class="aide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-info"/></svg>
+        <span>Les mentions en dore sont a remplacer dans Outlook apres le collage.</span>
+      </p>
     </div>
-
-    <div class="field-group">
-      <div class="field-group__head">
-        <h3 class="field-group__title">Objet</h3>
-      </div>
-      <label class="sr-only" for="drawer-objet">Objet du message</label>
-      <input class="input" id="drawer-objet" type="text">
-    </div>
-
-    <div class="field-group">
-      <div class="field-group__head">
-        <h3 class="field-group__title">Message</h3>
-        <button class="btn btn--ghost btn--sm" type="button" id="btn-restaurer" hidden>Revenir au modèle</button>
-      </div>
-      <label class="sr-only" for="drawer-texte">Contenu du message, modifiable</label>
-      <textarea class="textarea" id="drawer-texte" spellcheck="true"></textarea>
-    </div>
-
   </div>
 
   <div class="drawer__foot">
@@ -1027,34 +684,22 @@ kbd{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-copy"/></svg>
       Copier le message
     </button>
-    <div class="menu-wrap">
-      <button class="btn" type="button" id="btn-mail" aria-haspopup="menu" aria-expanded="false"
-              title="Choisir la messagerie et envoyer">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-send"/></svg>
-        Envoyer
-      </button>
-      <div class="menu" id="menu-envoi" role="menu" aria-label="Choisir une messagerie" hidden></div>
-    </div>
-    <button class="btn" type="button" id="btn-telecharger" title="Télécharger le message" aria-label="Télécharger le message">
+    <button class="btn" type="button" id="btn-telecharger" title="Telecharger" aria-label="Telecharger le message">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-download"/></svg>
     </button>
-    <button class="btn" type="button" id="btn-imprimer" title="Imprimer ou enregistrer en PDF" aria-label="Imprimer ou enregistrer en PDF">
+    <button class="btn" type="button" id="btn-imprimer" title="Imprimer ou enregistrer en PDF" aria-label="Imprimer">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-print"/></svg>
-    </button>
-    <button class="btn" type="button" id="btn-fav-drawer" aria-pressed="false" aria-label="Ajouter aux favoris" title="Ajouter aux favoris">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-star"/></svg>
     </button>
   </div>
 </aside>
 
 <div class="toast" id="toast" role="status" aria-live="polite">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-check"/></svg>
-  <span id="toast-texte">Message copié</span>
+  <span id="toast-texte"></span>
 </div>
 
 <!-- ==========================================================================
-     DONNÉES - SEULE ZONE À MODIFIER POUR GÉRER LES ÉTAPES
-     Ajoutez, supprimez ou réordonnez librement les objets du tableau "etapes".
+     DONNEES - SEULE ZONE A MODIFIER POUR GERER LES ETAPES
      Champs obligatoires : id, numero, titre, categorie, template_email, ordre.
      ========================================================================== -->
 <script type="application/json" id="templates-data">
@@ -1070,15 +715,16 @@ kbd{
       "ordre": 1,
       "titre": "Premier contact - appel entrant",
       "description": "Confirmer par écrit ce qui a été dit au téléphone et poser le prochain rendez-vous.",
-      "categorie": ["Prospection", "Premier contact"],
+      "categorie": [
+        "Prospection",
+        "Premier contact"
+      ],
       "badge": "📞 Appel",
       "icone": "phone",
       "couleur": "blue",
       "temps_moyen": "J+0",
       "actif": true,
-      "favori_par_defaut": true,
       "objet": "Suite à notre échange - {vehicule}",
-      "variables": ["prenom", "nom", "vehicule", "concession", "commercial", "telephone", "email"],
       "template_email": "Bonjour {prenom} {nom},\n\nMerci pour votre appel de ce jour au sujet de la {vehicule}.\n\nJe vous confirme les points évoqués ensemble :\n- Véhicule : {vehicule}\n- Disponibilité : véhicule visible sur notre site de {concession}\n- Votre interlocuteur unique : {commercial}\n\nLa prochaine étape la plus simple est un essai, sans engagement. Nous sommes ouverts du lundi au samedi et je peux bloquer un créneau à l'heure qui vous arrange.\n\nDites-moi simplement le jour qui vous convient, ou joignez-moi directement au {telephone}.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
     },
     {
@@ -1087,14 +733,15 @@ kbd{
       "ordre": 2,
       "titre": "Réponse à une demande en ligne",
       "description": "Lead reçu via le site, La Centrale ou une annonce. Répondre vite et proposer un créneau.",
-      "categorie": ["Prospection"],
+      "categorie": [
+        "Prospection"
+      ],
       "badge": "🌐 Lead web",
       "icone": "globe",
       "couleur": "blue",
       "temps_moyen": "J+0 · sous 2 h",
       "actif": true,
       "objet": "Votre demande concernant la {vehicule}",
-      "variables": ["prenom", "vehicule", "concession", "commercial", "telephone", "email"],
       "template_email": "Bonjour {prenom},\n\nVous venez de nous adresser une demande concernant la {vehicule} et je vous en remercie.\n\nBonne nouvelle : ce véhicule est disponible et visible à notre concession de {concession}.\n\nPour aller au plus vite, je peux vous préparer en une seule visite :\n- l'essai du véhicule,\n- l'estimation de votre voiture actuelle en reprise,\n- une simulation de financement (LOA ou LLD).\n\nQuel jour vous conviendrait cette semaine ? Un simple retour à ce message suffit, ou appelez-moi au {telephone}.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
     },
     {
@@ -1103,15 +750,15 @@ kbd{
       "ordre": 3,
       "titre": "Confirmation de l'essai",
       "description": "Verrouiller le rendez-vous : date, adresse, documents à apporter.",
-      "categorie": ["Premier contact"],
+      "categorie": [
+        "Premier contact"
+      ],
       "badge": "🗓️ Rendez-vous",
       "icone": "calendar",
       "couleur": "teal",
       "temps_moyen": "J+1",
       "actif": true,
-      "favori_par_defaut": true,
       "objet": "Votre essai de la {vehicule} le {date_rendez_vous}",
-      "variables": ["prenom", "vehicule", "date_rendez_vous", "concession", "commercial", "telephone", "email"],
       "template_email": "Bonjour {prenom},\n\nJe vous confirme votre essai de la {vehicule} le {date_rendez_vous}, à notre concession de {concession}.\n\nÀ prévoir pour l'essai :\n- votre permis de conduire,\n- la carte grise de votre véhicule actuel si vous souhaitez une estimation de reprise.\n\nComptez environ 45 minutes : nous prendrons le temps de faire un vrai tour d'essai et de répondre à vos questions.\n\nSi un imprévu survient, prévenez-moi au {telephone} et nous décalerons sans difficulté.\n\nÀ très bientôt,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
     },
     {
@@ -1120,14 +767,15 @@ kbd{
       "ordre": 4,
       "titre": "Relance après essai",
       "description": "Le client a essayé le véhicule mais n'a pas encore donné suite.",
-      "categorie": ["Relance"],
+      "categorie": [
+        "Relance"
+      ],
       "badge": "🔄 Relance",
       "icone": "refresh",
       "couleur": "amber",
       "temps_moyen": "J+2 après l'essai",
       "actif": true,
       "objet": "Vos impressions sur la {vehicule}",
-      "variables": ["prenom", "vehicule", "commercial", "telephone", "email", "concession"],
       "template_email": "Bonjour {prenom},\n\nJ'espère que l'essai de la {vehicule} vous a plu.\n\nJe voulais simplement savoir ce que vous en avez pensé, et s'il reste des points sur lesquels vous souhaitez y voir plus clair : équipements, budget mensuel, valeur de reprise, délai de livraison.\n\nSi le véhicule vous convient, je peux vous établir une proposition chiffrée dès aujourd'hui. Et s'il ne correspond pas tout à fait à ce que vous cherchiez, dites-le-moi franchement : nous avons d'autres véhicules qui pourraient mieux vous convenir.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
     },
     {
@@ -1136,15 +784,15 @@ kbd{
       "ordre": 5,
       "titre": "Envoi de la proposition commerciale",
       "description": "Transmettre le devis avec le détail du prix, de la reprise et des prestations incluses.",
-      "categorie": ["Devis"],
+      "categorie": [
+        "Devis"
+      ],
       "badge": "📄 Devis",
       "icone": "file",
       "couleur": "violet",
       "temps_moyen": "J+3",
       "actif": true,
-      "favori_par_defaut": true,
       "objet": "Votre proposition pour la {vehicule}",
-      "variables": ["prenom", "nom", "vehicule", "modele", "montant", "commercial", "telephone", "email", "concession"],
       "template_email": "Bonjour {prenom} {nom},\n\nComme convenu, vous trouverez ci-joint votre proposition pour la {vehicule} ({modele}).\n\nEn résumé :\n- Prix du véhicule remise déduite : {montant}\n- Reprise de votre véhicule actuel : selon estimation jointe\n- Inclus : préparation esthétique et mécanique, contrôle en {concession}, garantie constructeur\n\nCette proposition est valable 15 jours. Le véhicule reste disponible mais n'est pas réservé tant que la commande n'est pas signée.\n\nJe reste disponible pour en discuter, ajuster le montage financier ou revoir un point précis. Un appel au {telephone} est souvent plus rapide qu'un échange de mails.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
     },
     {
@@ -1153,14 +801,16 @@ kbd{
       "ordre": 6,
       "titre": "Proposition de financement LOA / LLD",
       "description": "Présenter le loyer mensuel et les options de financement de manière lisible.",
-      "categorie": ["Financement", "Devis"],
+      "categorie": [
+        "Financement",
+        "Devis"
+      ],
       "badge": "💳 Financement",
       "icone": "card",
       "couleur": "indigo",
       "temps_moyen": "J+3",
       "actif": true,
       "objet": "Votre simulation de financement - {vehicule}",
-      "variables": ["prenom", "vehicule", "montant", "commercial", "telephone", "email", "concession"],
       "template_email": "Bonjour {prenom},\n\nVoici la simulation de financement pour la {vehicule}, telle que nous en avons parlé.\n\nProposition :\n- Loyer mensuel : {montant}\n- Durée et kilométrage : selon le détail joint\n- Inclus : garantie et assistance constructeur\n- En option : entretien, pneumatiques, véhicule de remplacement\n\nLa LOA vous laisse le choix d'acheter le véhicule en fin de contrat ; la LLD vous libère de la question de la revente. Je peux vous chiffrer les deux si vous hésitez.\n\nPour lancer l'étude de financement, il me faut simplement une pièce d'identité, un justificatif de domicile et un RIB.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
     },
     {
@@ -1169,14 +819,16 @@ kbd{
       "ordre": 7,
       "titre": "Relance devis sans réponse",
       "description": "Dernière relance sur une proposition restée sans retour. Ton direct, pas insistant.",
-      "categorie": ["Relance", "Devis"],
+      "categorie": [
+        "Relance",
+        "Devis"
+      ],
       "badge": "⏰ Sans réponse",
       "icone": "bell",
       "couleur": "amber",
       "temps_moyen": "J+7",
       "actif": true,
       "objet": "Votre proposition - {vehicule}",
-      "variables": ["prenom", "vehicule", "commercial", "telephone", "email", "concession"],
       "template_email": "Bonjour {prenom},\n\nJe reviens vers vous au sujet de la proposition envoyée pour la {vehicule}.\n\nSans nouvelles de votre part, je préfère poser la question simplement : ce projet est-il toujours d'actualité ?\n\n- Si oui, dites-moi ce qui vous retient et je verrai ce que je peux faire.\n- Si le budget ne convient pas, j'ai d'autres véhicules dans une gamme différente.\n- Si vous avez changé d'avis, un mot suffit et je cesserai de vous solliciter.\n\nDans tous les cas, merci de m'avoir consulté.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
     },
     {
@@ -1185,14 +837,15 @@ kbd{
       "ordre": 8,
       "titre": "Confirmation de commande",
       "description": "Le bon de commande est signé. Rassurer et annoncer la suite.",
-      "categorie": ["Signature"],
+      "categorie": [
+        "Signature"
+      ],
       "badge": "✅ Signé",
       "icone": "check",
       "couleur": "green",
       "temps_moyen": "J+10",
       "actif": true,
       "objet": "Confirmation de votre commande - {vehicule}",
-      "variables": ["prenom", "nom", "vehicule", "modele", "date_livraison", "commercial", "telephone", "email", "concession"],
       "template_email": "Bonjour {prenom} {nom},\n\nVotre commande de la {vehicule} ({modele}) est enregistrée. Merci de votre confiance.\n\nCe qui se passe maintenant :\n1. Nous lançons la préparation du véhicule et le dossier administratif.\n2. Je vous tiens informé de l'avancement, sans que vous ayez à me relancer.\n3. Livraison prévisionnelle : {date_livraison}, à notre concession de {concession}.\n\nÀ préparer de votre côté, sans urgence : votre attestation d'assurance au nom du futur véhicule et votre permis de conduire.\n\nJe reste votre interlocuteur du début à la fin. Pour toute question : {telephone}.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
     },
     {
@@ -1201,14 +854,15 @@ kbd{
       "ordre": 9,
       "titre": "Point sur le délai de livraison",
       "description": "Tenir le client informé pendant l'attente, avec ou sans bonne nouvelle.",
-      "categorie": ["Signature"],
+      "categorie": [
+        "Signature"
+      ],
       "badge": "⏳ En cours",
       "icone": "clock",
       "couleur": "slate",
       "temps_moyen": "J+30",
       "actif": true,
       "objet": "Point sur votre {vehicule}",
-      "variables": ["prenom", "vehicule", "date_livraison", "commercial", "telephone", "email", "concession"],
       "template_email": "Bonjour {prenom},\n\nUn point rapide sur votre {vehicule}, comme promis.\n\nÉtat d'avancement : le véhicule est en cours de préparation et le dossier administratif suit son cours.\nDate de livraison estimée : {date_livraison}.\n\nJe vous préviendrai dès que la date sera définitivement confirmée, afin que nous fixions ensemble le créneau de remise des clés.\n\nSi vous avez la moindre question d'ici là, appelez-moi au {telephone}.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
     },
     {
@@ -1217,15 +871,15 @@ kbd{
       "ordre": 10,
       "titre": "Convocation à la livraison",
       "description": "Fixer la remise des clés et lister ce que le client doit apporter.",
-      "categorie": ["Livraison"],
+      "categorie": [
+        "Livraison"
+      ],
       "badge": "🔑 Livraison",
       "icone": "key",
       "couleur": "green",
       "temps_moyen": "J-3 avant livraison",
       "actif": true,
-      "favori_par_defaut": true,
       "objet": "Remise des clés de votre {vehicule} le {date_livraison}",
-      "variables": ["prenom", "vehicule", "immatriculation", "date_livraison", "concession", "commercial", "telephone", "email"],
       "template_email": "Bonjour {prenom},\n\nVotre {vehicule} est prête. Je vous propose la remise des clés le {date_livraison}, à notre concession de {concession}.\n\nÀ apporter le jour J :\n- votre permis de conduire,\n- votre attestation d'assurance au numéro {immatriculation},\n- le moyen de paiement du solde,\n- la carte grise de votre ancien véhicule s'il est repris.\n\nPrévoyez environ une heure : nous ferons ensemble le tour du véhicule et je vous montrerai les principales fonctions avant votre départ.\n\nConfirmez-moi simplement que ce créneau vous convient.\n\nÀ très bientôt,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
     },
     {
@@ -1234,14 +888,15 @@ kbd{
       "ordre": 11,
       "titre": "Remerciement après livraison",
       "description": "Remercier, vérifier que tout va bien et demander un avis.",
-      "categorie": ["Après-vente"],
+      "categorie": [
+        "Après-vente"
+      ],
       "badge": "🤝 Merci",
       "icone": "heart",
       "couleur": "rose",
       "temps_moyen": "J+1 après livraison",
       "actif": true,
       "objet": "Merci - et bonne route avec votre {vehicule}",
-      "variables": ["prenom", "vehicule", "commercial", "telephone", "email", "concession"],
       "template_email": "Bonjour {prenom},\n\nMerci d'avoir choisi Arc de Triomphe Autos pour votre {vehicule}. J'espère que les premiers kilomètres vous ont donné satisfaction.\n\nSi un point vous semble à revoir, même minime, dites-le-moi directement : c'est plus simple à traiter maintenant.\n\nSi tout est en ordre, un avis de votre part nous aiderait beaucoup. Quelques lignes suffisent, et cela compte réellement pour l'équipe.\n\nJe reste votre contact pour la suite : entretien, question technique ou futur projet. Mon numéro direct : {telephone}.\n\nBonne route,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
     },
     {
@@ -1250,14 +905,15 @@ kbd{
       "ordre": 12,
       "titre": "Relance entretien et fidélisation",
       "description": "Reprendre contact plusieurs mois après pour l'entretien ou un nouveau projet.",
-      "categorie": ["Après-vente"],
+      "categorie": [
+        "Après-vente"
+      ],
       "badge": "🔧 Atelier",
       "icone": "wrench",
       "couleur": "teal",
       "temps_moyen": "J+180",
       "actif": true,
       "objet": "L'entretien de votre {vehicule}",
-      "variables": ["prenom", "vehicule", "immatriculation", "concession", "commercial", "telephone", "email"],
       "template_email": "Bonjour {prenom},\n\nCela fait déjà quelques mois que vous roulez avec votre {vehicule} ({immatriculation}) et l'échéance d'entretien approche.\n\nNotre atelier de {concession} peut s'en charger, avec des pièces d'origine et un contrôle complet du véhicule. Nous proposons un véhicule de courtoisie selon disponibilité.\n\nDites-moi le jour qui vous arrange et je réserve le créneau.\n\nEt si un nouveau projet se dessine, sachez que la valeur de reprise de votre véhicule est aujourd'hui à un bon niveau. Je peux vous en faire l'estimation sans engagement.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
     }
   ]
@@ -1267,194 +923,68 @@ kbd{
 <script>
 "use strict";
 /* ==========================================================================
-   APPLICATION - Parcours commercial Arc de Triomphe Autos
-   Organisation du fichier :
-     1. Constantes et libellés
-     2. Stockage local (préférences persistantes)
-     3. Chargement et validation des données
-     4. État de l'application
-     5. Utilitaires (échappement, recherche, variables)
-     6. Rendu (statistiques, filtres, frise, récents)
-     7. Tiroir (ouverture, formulaire, aperçu, actions)
-     8. Actions (copie, messagerie, impression)
-     9. Événements et démarrage
+   PARCOURS COMMERCIAL - ARC DE TRIOMPHE AUTOS
+   Outil de consultation : lire une etape, copier le modele, le coller dans
+   Outlook. Aucune saisie, aucun suivi, aucune donnee client conservee.
+
+   Plan du fichier :
+     1. Constantes
+     2. Chargement et validation des donnees
+     3. Etat
+     4. Utilitaires
+     5. Rendu de la frise
+     6. Tiroir
+     7. Actions : copier, telecharger, imprimer
+     8. Evenements et demarrage
    ========================================================================== */
 
 /* ==========================================================================
    1. CONSTANTES
    ========================================================================== */
 
-/** Clés utilisées dans le LocalStorage. Préfixées pour éviter les collisions. */
-const CLES = {
-  favoris:  "adt.favoris",
-  historique: "adt.historique",
-  theme:    "adt.theme",
-  faits:    "adt.faits",
-  valeurs:  "adt.valeurs",
-  envois:   "adt.envois",
-  messagerie: "adt.messagerie"
-};
+/** Seule preference conservee sur le poste : le theme clair ou sombre. */
+const CLE_THEME = "adt.theme";
 
-/** Encodage court pour la construction des liens de rédaction. */
-const enc = encodeURIComponent;
-
-/**
- * Messageries prises en charge pour l'envoi.
- * Les quatre premières ouvrent directement la fenêtre de rédaction du service
- * dans le navigateur. La dernière passe par le lien mailto standard, que les
- * applications installées interceptent : c'est la voie officielle pour Proton
- * Mail, iCloud Mail, BlueMail, Apple Mail, Thunderbird ou Outlook de bureau.
- * @type {Array<{id:string, nom:string, note:string, url:Function, externe:boolean}>}
- */
-const MESSAGERIES = [
-  {
-    id: "gmail", nom: "Gmail", note: "Rédaction dans l'onglet Gmail", externe: true,
-    url: (d, o, c) => `https://mail.google.com/mail/?view=cm&fs=1&to=${enc(d)}&su=${enc(o)}&body=${enc(c)}`
-  },
-  {
-    id: "outlook", nom: "Outlook.com", note: "Compte personnel Microsoft ou Hotmail", externe: true,
-    url: (d, o, c) => `https://outlook.live.com/mail/0/deeplink/compose?to=${enc(d)}&subject=${enc(o)}&body=${enc(c)}`
-  },
-  {
-    id: "microsoft365", nom: "Outlook Microsoft 365", note: "Compte professionnel", externe: true,
-    url: (d, o, c) => `https://outlook.office.com/mail/deeplink/compose?to=${enc(d)}&subject=${enc(o)}&body=${enc(c)}`
-  },
-  {
-    id: "yahoo", nom: "Yahoo Mail", note: "Rédaction dans l'onglet Yahoo", externe: true,
-    url: (d, o, c) => `https://compose.mail.yahoo.com/?to=${enc(d)}&subject=${enc(o)}&body=${enc(c)}`
-  },
-  {
-    id: "defaut", nom: "Mon application de messagerie",
-    note: "Proton Mail, iCloud Mail, BlueMail, Apple Mail, Thunderbird, Outlook installé",
-    externe: false,
-    url: (d, o, c) => `mailto:${enc(d)}?subject=${enc(o)}&body=${enc(c)}`
-  }
-];
-
-/** Nombre maximum de messages conservés dans l'archive. */
-const ARCHIVE_MAX = 500;
-
-/** Champs obligatoires de chaque étape du JSON. */
+/** Champs obligatoires de chaque etape du JSON. */
 const CHAMPS_REQUIS = ["id", "numero", "titre", "categorie", "template_email", "ordre"];
 
-/** Nombre maximum d'entrées conservées dans l'historique. */
-const HISTORIQUE_MAX = 10;
-
-/**
- * Libellés lisibles des variables de template.
- * Une variable absente de cette table reçoit un libellé généré automatiquement.
- */
-const LIBELLES = {
-  prenom: "Prénom du client",
-  nom: "Nom du client",
-  vehicule: "Véhicule",
-  modele: "Modèle / finition",
-  immatriculation: "Immatriculation",
-  commercial: "Votre nom",
-  telephone: "Votre téléphone",
-  email: "Votre email",
-  concession: "Concession",
-  montant: "Montant",
-  date_rendez_vous: "Date du rendez-vous",
-  date_livraison: "Date de livraison"
-};
-
-/**
- * Variables qui concernent le commercial et non le client : leur valeur est
- * réutilisée d'un template à l'autre pour éviter de la ressaisir.
- */
-const VARIABLES_PERSISTANTES = ["commercial", "telephone", "email", "concession"];
-
-/** Exemples affichés en placeholder pour guider la saisie. */
-const EXEMPLES = {
-  prenom: "Camille",
-  nom: "Durand",
-  vehicule: "Range Rover Evoque",
-  modele: "D165 S BVA",
-  immatriculation: "AB-123-CD",
-  commercial: "Louis Jardin",
-  telephone: "01 45 74 00 00",
-  email: "prenom.nom@arcdetriomphe.net",
-  concession: "Brunel",
-  montant: "38 900 €",
-  date_rendez_vous: "jeudi 14 à 10 h",
-  date_livraison: "vendredi 22 mars"
-};
-
-/* Raccourcis DOM. */
 const $  = (sel, ctx = document) => ctx.querySelector(sel);
 const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
 /* ==========================================================================
-   2. STOCKAGE LOCAL
+   2. CHARGEMENT ET VALIDATION
    ========================================================================== */
 
 /**
- * Lit une valeur JSON dans le LocalStorage.
- * @param {string} cle Clé de stockage.
- * @param {*} secours Valeur retournée si absente ou illisible.
- * @returns {*} La valeur stockée ou la valeur de secours.
- */
-function lire(cle, secours) {
-  try {
-    const brut = localStorage.getItem(cle);
-    return brut === null ? secours : JSON.parse(brut);
-  } catch (e) {
-    return secours;
-  }
-}
-
-/**
- * Écrit une valeur JSON dans le LocalStorage. Échoue silencieusement si le
- * stockage est indisponible (navigation privée, quota atteint).
- * @param {string} cle Clé de stockage.
- * @param {*} valeur Valeur sérialisable.
- * @returns {void}
- */
-function ecrire(cle, valeur) {
-  try {
-    localStorage.setItem(cle, JSON.stringify(valeur));
-  } catch (e) {
-    /* Pas de blocage : l'application reste utilisable sans persistance. */
-  }
-}
-
-/* ==========================================================================
-   3. CHARGEMENT ET VALIDATION DES DONNÉES
-   ========================================================================== */
-
-/**
- * Récupère les données des étapes.
- * Tente d'abord le fichier externe templates.json (utile en intranet ou sur un
- * hébergement) ; retombe sur le bloc JSON intégré si le fichier est absent ou
- * si la page est ouverte en local (file://).
- * @returns {Promise<Object>} Les données brutes.
+ * Recupere les donnees des etapes.
+ * Tente d'abord le fichier externe templates.json, utile en intranet ; retombe
+ * sur le bloc integre si le fichier est absent ou si la page est ouverte en
+ * local (protocole file://).
+ * @returns {Promise<Object>} Donnees brutes.
  */
 async function chargerDonnees() {
   if (location.protocol === "http:" || location.protocol === "https:") {
     try {
       const reponse = await fetch("templates.json", { cache: "no-store" });
       if (reponse.ok) return await reponse.json();
-    } catch (e) {
-      /* Fichier externe indisponible : on utilise le bloc intégré. */
-    }
+    } catch (e) { /* fichier externe indisponible : bloc integre */ }
   }
   const bloc = $("#templates-data");
-  if (!bloc) throw new Error("Bloc de données templates-data introuvable.");
+  if (!bloc) throw new Error("Bloc de donnees templates-data introuvable.");
   return JSON.parse(bloc.textContent);
 }
 
 /**
- * Vérifie la structure des données et normalise chaque étape.
- * @param {Object} donnees Données brutes issues du JSON.
- * @returns {{etapes: Array<Object>, erreurs: Array<string>}} Étapes valides et
- *          liste des anomalies détectées, exprimées en clair.
+ * Verifie la structure des donnees et normalise chaque etape.
+ * @param {Object} donnees Donnees brutes issues du JSON.
+ * @returns {{etapes: Array<Object>, erreurs: Array<string>}} Etapes valides et
+ *          anomalies detectees, exprimees en clair.
  */
 function validerDonnees(donnees) {
   const erreurs = [];
 
   if (!donnees || !Array.isArray(donnees.etapes)) {
-    erreurs.push("La clé « etapes » est absente ou n'est pas un tableau.");
+    erreurs.push("La cle « etapes » est absente ou n'est pas un tableau.");
     return { etapes: [], erreurs };
   }
 
@@ -1462,29 +992,23 @@ function validerDonnees(donnees) {
   const etapes = [];
 
   donnees.etapes.forEach((brut, index) => {
-    const position = `Étape n°${index + 1}`;
+    const position = `Etape n°${index + 1}`;
     const manquants = CHAMPS_REQUIS.filter(champ =>
       brut[champ] === undefined || brut[champ] === null || brut[champ] === ""
     );
 
     if (manquants.length) {
-      erreurs.push(`${position} : champ obligatoire manquant → ${manquants.join(", ")}`);
+      erreurs.push(`${position} : champ obligatoire manquant -> ${manquants.join(", ")}`);
       return;
     }
     if (idsVus.has(brut.id)) {
-      erreurs.push(`${position} : l'identifiant ${brut.id} est déjà utilisé.`);
+      erreurs.push(`${position} : l'identifiant ${brut.id} est deja utilise.`);
       return;
     }
     idsVus.add(brut.id);
 
-    /* Normalisation : la catégorie accepte une chaîne ou un tableau. */
+    /* La categorie accepte une chaine ou un tableau. */
     const categories = Array.isArray(brut.categorie) ? brut.categorie : [brut.categorie];
-
-    /* Les variables déclarées sont complétées par celles réellement présentes
-       dans le texte, afin qu'aucun champ ne soit oublié dans le formulaire. */
-    const declarees = Array.isArray(brut.variables) ? brut.variables : [];
-    const detectees = extraireVariables(`${brut.objet || ""}\n${brut.template_email}`);
-    const variables = Array.from(new Set([...declarees, ...detectees]));
 
     etapes.push({
       id: brut.id,
@@ -1499,8 +1023,6 @@ function validerDonnees(donnees) {
       temps_moyen: String(brut.temps_moyen || ""),
       objet: String(brut.objet || brut.titre),
       template: String(brut.template_email),
-      variables,
-      favori_par_defaut: Boolean(brut.favori_par_defaut),
       actif: brut.actif !== false
     });
   });
@@ -1509,9 +1031,9 @@ function validerDonnees(donnees) {
 }
 
 /**
- * Affiche l'écran d'erreur avec le détail des anomalies.
+ * Affiche l'ecran d'erreur bloquante avec le detail des anomalies.
  * @param {string} message Message principal.
- * @param {Array<string>} details Liste des anomalies précises.
+ * @param {Array<string>} details Anomalies precises.
  * @returns {void}
  */
 function afficherErreur(message, details = []) {
@@ -1524,22 +1046,20 @@ function afficherErreur(message, details = []) {
     liste.appendChild(li);
   });
   $("#etat-erreur").hidden = false;
-  $("#frise").hidden = true;
-  $(".toolbar").hidden = true;
-  $(".progress").hidden = true;
+  $("#piste-zone").hidden = true;
+  $("#piste-aide").hidden = true;
 }
 
 /**
- * Signale les étapes ignorées sans bloquer l'application : les étapes valides
- * restent utilisables, l'anomalie est décrite précisément pour correction.
- * @param {Array<string>} erreurs Anomalies détectées à la validation.
+ * Signale les etapes ignorees sans bloquer l'outil : les etapes valides
+ * restent consultables, l'anomalie est decrite pour correction.
+ * @param {Array<string>} erreurs Anomalies detectees.
  * @returns {void}
  */
 function afficherAvertissement(erreurs) {
-  const nombre = erreurs.length;
-  $("#avertissement-titre").textContent = nombre === 1
-    ? "1 étape a été ignorée dans le fichier de données"
-    : `${nombre} étapes ont été ignorées dans le fichier de données`;
+  $("#avertissement-titre").textContent = erreurs.length === 1
+    ? "1 etape a ete ignoree dans le fichier de donnees"
+    : `${erreurs.length} etapes ont ete ignorees dans le fichier de donnees`;
 
   const liste = $("#avertissement-liste");
   liste.innerHTML = "";
@@ -1552,36 +1072,24 @@ function afficherAvertissement(erreurs) {
 }
 
 /* ==========================================================================
-   4. ÉTAT DE L'APPLICATION
+   3. ETAT
    ========================================================================== */
 
 const etat = {
-  etapes: [],                              // Toutes les étapes valides et actives
-  recherche: "",                           // Terme de recherche courant
-  filtres: new Set(),                      // Catégories actives
-  favorisSeuls: false,                     // Afficher uniquement les favoris
-  favoris: new Set(lire(CLES.favoris, [])),
-  faits: new Set(lire(CLES.faits, [])),    // Étapes marquées comme réalisées
-  historique: lire(CLES.historique, []),   // Derniers ids consultés
-  valeurs: lire(CLES.valeurs, {}),         // Valeurs persistantes des variables
-  envois: lire(CLES.envois, []),           // Archive des messages envoyés
-  vue: "parcours",                         // Vue active : parcours ou envois
-  rechercheEnvois: "",                     // Filtre de l'archive
-  envoiOuvert: null,                       // Message déplié dans l'archive
-  destinataire: "",                        // Adresse du client, mémoire de session
-  etapeOuverte: null,                      // Étape actuellement dans le tiroir
-  texteModifie: false,                     // Le message a-t-il été édité à la main
-  dernierFocus: null                       // Élément à refocaliser à la fermeture
+  etapes: [],           // Toutes les etapes valides et actives
+  recherche: "",        // Terme de recherche courant
+  etapeOuverte: null,   // Etape actuellement affichee dans le tiroir
+  dernierFocus: null    // Element a refocaliser a la fermeture du tiroir
 };
 
 /* ==========================================================================
-   5. UTILITAIRES
+   4. UTILITAIRES
    ========================================================================== */
 
 /**
- * Échappe les caractères HTML pour une insertion sûre via innerHTML.
+ * Echappe les caracteres HTML pour une insertion sure via innerHTML.
  * @param {string} texte Texte brut.
- * @returns {string} Texte échappé.
+ * @returns {string} Texte echappe.
  */
 function echapper(texte) {
   return String(texte)
@@ -1590,44 +1098,19 @@ function echapper(texte) {
 }
 
 /**
- * Supprime les accents et met en minuscules, pour une recherche tolérante.
- * @param {string} texte Texte à normaliser.
- * @returns {string} Texte normalisé.
+ * Supprime les accents et met en minuscules, pour une recherche tolerante.
+ * @param {string} texte Texte a normaliser.
+ * @returns {string} Texte normalise.
  */
 function normaliser(texte) {
   return String(texte).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 /**
- * Extrait les noms de variables présents dans un texte, au format {variable}.
- * @param {string} texte Texte à analyser.
- * @returns {Array<string>} Noms de variables, sans doublon, dans l'ordre d'apparition.
- */
-function extraireVariables(texte) {
-  const trouvees = String(texte).match(/\{([a-z0-9_]+)\}/gi) || [];
-  return Array.from(new Set(trouvees.map(v => v.slice(1, -1))));
-}
-
-/**
- * Remplace les variables d'un texte par les valeurs saisies.
- * Une variable non renseignée reste visible sous la forme {variable}, afin que
- * l'oubli soit repérable avant l'envoi.
- * @param {string} texte Texte contenant les variables.
- * @param {Object<string,string>} valeurs Table des valeurs saisies.
- * @returns {string} Texte personnalisé.
- */
-function appliquerVariables(texte, valeurs) {
-  return String(texte).replace(/\{([a-z0-9_]+)\}/gi, (marqueur, nom) => {
-    const valeur = valeurs[nom];
-    return valeur && String(valeur).trim() !== "" ? valeur : marqueur;
-  });
-}
-
-/**
- * Entoure les occurrences du terme recherché par une balise <mark>.
- * @param {string} texte Texte source (sera échappé).
- * @param {string} terme Terme recherché.
- * @returns {string} HTML sûr, avec les correspondances surlignées.
+ * Entoure les occurrences du terme recherche par une balise <mark>.
+ * @param {string} texte Texte source, echappe par la fonction.
+ * @param {string} terme Terme recherche.
+ * @returns {string} HTML sur, avec les correspondances surlignees.
  */
 function surligner(texte, terme) {
   const sur = echapper(texte);
@@ -1635,19 +1118,10 @@ function surligner(texte, terme) {
 
   const cible = normaliser(sur);
   const aiguille = normaliser(terme);
-  if (!aiguille) return sur;
+  if (!aiguille || cible.length !== sur.length) return sur;
 
-  /* Sécurité : si la normalisation a modifié la longueur de la chaîne, les
-     index ne sont plus alignés. On renonce alors au surlignage plutôt que de
-     produire un balisage incorrect. */
-  if (cible.length !== sur.length) return sur;
-
-  let resultat = "";
-  let curseur = 0;
+  let resultat = "", curseur = 0;
   let position = cible.indexOf(aiguille);
-
-  /* La normalisation conserve la longueur des chaînes (suppression de
-     diacritiques uniquement), les index restent donc alignés. */
   while (position !== -1) {
     resultat += sur.slice(curseur, position)
              + "<mark>" + sur.slice(position, position + aiguille.length) + "</mark>";
@@ -1658,18 +1132,36 @@ function surligner(texte, terme) {
 }
 
 /**
- * Construit une icône SVG référencée dans le sprite.
- * @param {string} nom Nom de l'icône sans le préfixe.
- * @param {string} classe Classes CSS additionnelles.
+ * Met en evidence les variables {ainsi} pour qu'elles soient reperables.
+ * @param {string} texte Texte du modele.
+ * @returns {string} HTML sur, variables enrobees dans un marqueur dore.
+ */
+function marquerVariables(texte) {
+  return echapper(texte).replace(/\{([a-z0-9_]+)\}/gi,
+    (marqueur) => `<span class="ph">${marqueur}</span>`);
+}
+
+/**
+ * Construit une icone SVG referencee dans le sprite.
+ * @param {string} nom Nom de l'icone sans le prefixe.
  * @returns {string} Balisage SVG.
  */
-function icone(nom, classe = "") {
-  return `<svg class="${classe}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-${echapper(nom)}"/></svg>`;
+function icone(nom) {
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-${echapper(nom)}"/></svg>`;
+}
+
+/**
+ * Transforme un titre en nom de fichier sur.
+ * @param {string} texte Texte source.
+ * @returns {string} Chaine sans accent ni caractere special.
+ */
+function slug(texte) {
+  return normaliser(texte).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
 }
 
 /**
  * Affiche une notification temporaire.
- * @param {string} message Texte à afficher.
+ * @param {string} message Texte a afficher.
  * @returns {void}
  */
 let minuteurToast = null;
@@ -1682,200 +1174,67 @@ function notifier(message) {
 }
 
 /* ==========================================================================
-   6. RENDU
+   5. RENDU DE LA FRISE
    ========================================================================== */
 
 /**
- * Renvoie les étapes correspondant à la recherche et aux filtres actifs.
- * @returns {Array<Object>} Étapes filtrées, dans l'ordre du parcours.
+ * Renvoie les etapes correspondant a la recherche.
+ * @returns {Array<Object>} Etapes filtrees, dans l'ordre du parcours.
  */
 function etapesVisibles() {
   const terme = normaliser(etat.recherche.trim());
+  if (!terme) return etat.etapes;
 
-  return etat.etapes.filter(etape => {
-    if (etat.favorisSeuls && !etat.favoris.has(etape.id)) return false;
-
-    if (etat.filtres.size) {
-      const correspond = etape.categories.some(cat => etat.filtres.has(cat));
-      if (!correspond) return false;
-    }
-
-    if (!terme) return true;
-
-    /* La recherche porte sur le titre, la description, les catégories,
-       le badge et le corps du message. */
-    const champs = [
-      etape.titre, etape.description, etape.badge,
-      etape.categories.join(" "), etape.objet, etape.template
-    ].join(" ");
-    return normaliser(champs).includes(terme);
-  });
+  return etat.etapes.filter(etape => normaliser([
+    etape.titre, etape.description, etape.badge,
+    etape.categories.join(" "), etape.objet, etape.template
+  ].join(" ")).includes(terme));
 }
 
 /**
- * Met à jour les quatre statistiques de l'en-tête.
- * @returns {void}
- */
-function rendreStats() {
-  $("#stat-etapes").textContent = etat.etapes.length;
-  $("#stat-favoris").textContent = etat.favoris.size;
-
-  const categories = new Set();
-  etat.etapes.forEach(e => e.categories.forEach(c => categories.add(c)));
-  $("#stat-categories").textContent = categories.size;
-
-  $("#stat-envois").textContent = etat.envois.length;
-  $("#onglet-envois-compte").textContent = etat.envois.length;
-
-  const dernierId = etat.historique[0];
-  const derniere = etat.etapes.find(e => e.id === dernierId);
-  $("#stat-dernier").textContent = derniere ? derniere.titre : "Aucun";
-  $("#stat-dernier").title = derniere ? derniere.titre : "";
-}
-
-/**
- * Met à jour la barre de progression du parcours.
- * @returns {void}
- */
-function rendreProgression() {
-  const total = etat.etapes.length;
-  const faits = etat.etapes.filter(e => etat.faits.has(e.id)).length;
-  const pourcent = total ? Math.round((faits / total) * 100) : 0;
-
-  $("#progress-fill").style.width = pourcent + "%";
-  $("#progress-count").textContent = `${faits} / ${total} étapes`;
-  $("#progress-bar").setAttribute("aria-valuenow", String(pourcent));
-}
-
-/**
- * Construit la barre de filtres à partir des catégories réellement présentes.
- * @returns {void}
- */
-function rendreFiltres() {
-  const compteur = new Map();
-  etat.etapes.forEach(etape => {
-    etape.categories.forEach(cat => compteur.set(cat, (compteur.get(cat) || 0) + 1));
-  });
-
-  const conteneur = $("#filtres");
-  const morceaux = [];
-
-  morceaux.push(`
-    <button class="chip" type="button" data-filtre="__tous" aria-pressed="${etat.filtres.size === 0 && !etat.favorisSeuls}">
-      Toutes <span class="chip__count">${etat.etapes.length}</span>
-    </button>
-    <button class="chip" type="button" data-filtre="__favoris" aria-pressed="${etat.favorisSeuls}">
-      ${icone("star")} Favoris <span class="chip__count">${etat.favoris.size}</span>
-    </button>
-    <span class="chip--sep" aria-hidden="true"></span>
-  `);
-
-  /* Les catégories sont ordonnées selon leur première apparition dans le
-     parcours : l'ordre des filtres reflète l'ordre du cycle de vente. */
-  Array.from(compteur.keys()).forEach(cat => {
-    morceaux.push(`
-      <button class="chip" type="button" data-filtre="${echapper(cat)}" aria-pressed="${etat.filtres.has(cat)}">
-        ${echapper(cat)} <span class="chip__count">${compteur.get(cat)}</span>
-      </button>
-    `);
-  });
-
-  conteneur.innerHTML = morceaux.join("");
-}
-
-/**
- * Affiche la liste des derniers modèles consultés.
- * @returns {void}
- */
-function rendreRecents() {
-  const zone = $("#recents");
-  const items = etat.historique
-    .map(id => etat.etapes.find(e => e.id === id))
-    .filter(Boolean)
-    .slice(0, HISTORIQUE_MAX);
-
-  if (!items.length) { zone.hidden = true; return; }
-
-  zone.hidden = etat.vue !== "parcours";
-  zone.innerHTML = `<span class="recent__label">Récents</span>` + items.map(etape => `
-    <button class="recent__item" type="button" data-ouvrir="${etape.id}" data-couleur="${echapper(etape.couleur)}">
-      ${echapper(etape.titre)}
-    </button>
-  `).join("");
-}
-
-/**
- * Renvoie l'identifiant de l'étape en cours : la première du parcours qui
- * n'est pas encore marquée comme faite. Sert de repère « vous êtes ici ».
- * @returns {number|null} Identifiant, ou null si tout le parcours est terminé.
- */
-function etapeCourante() {
-  const suivante = etat.etapes.find(e => !etat.faits.has(e.id));
-  return suivante ? suivante.id : null;
-}
-
-/**
- * Construit une carte d'étape.
- * @param {Object} etape Étape normalisée.
+ * Construit une etape de la frise.
+ * @param {Object} etape Etape normalisee.
  * @param {string} terme Terme de recherche pour le surlignage.
- * @param {number|null} idCourant Identifiant de l'étape en cours.
- * @returns {string} Balisage HTML de la carte.
+ * @param {number} position Rang affiche, a partir de zero.
+ * @returns {string} Balisage HTML de l'etape.
  */
-function carteEtape(etape, terme, idCourant) {
-  const fait = etat.faits.has(etape.id);
-  const courant = etape.id === idCourant;
-  const favori = etat.favoris.has(etape.id);
+function bloccEtape(etape, terme, position) {
   const numero = String(etape.numero).padStart(2, "0");
+  const badge = etape.badge || etape.categories[0];
 
-  const badge = etape.badge
-    ? `<span class="badge">${surligner(etape.badge, terme)}</span>`
-    : `<span class="badge">${icone(etape.icone)}${surligner(etape.categories[0], terme)}</span>`;
-
-  const chips = etape.variables.slice(0, 6)
-    .map(v => `<span class="var-chip">{${echapper(v)}}</span>`).join("");
-  const reste = etape.variables.length > 6
-    ? `<span class="var-chip">+${etape.variables.length - 6}</span>` : "";
+  /* Alternance haut / bas selon la position affichee, pas selon l'identifiant :
+     la frise reste equilibree meme apres une recherche. */
+  const cote = position % 2 === 0 ? "haut" : "bas";
 
   return `
-    <li class="step" data-couleur="${echapper(etape.couleur)}" data-fait="${fait}" data-courant="${courant}" data-id="${etape.id}">
-      <div class="step__node" aria-hidden="true">
-        <span>${numero}</span>${icone("check")}
-      </div>
-      <div class="step__card">
-        <button class="step__main" type="button" data-ouvrir="${etape.id}"
-                aria-label="Ouvrir le modèle : ${echapper(etape.titre)}">
-          <div class="step__meta">
-            ${badge}
-            <span class="dot-sep" aria-hidden="true">·</span>
-            <span class="tag tag--time">${echapper(etape.temps_moyen)}</span>
-            <span class="dot-sep" aria-hidden="true">·</span>
-            <span class="tag">${etape.categories.map(c => surligner(c, terme)).join(", ")}</span>
+    <li class="etape etape--${cote}" data-couleur="${echapper(etape.couleur)}" data-id="${etape.id}">
+      <div class="etape__voie" aria-hidden="true"></div>
+      <div class="etape__noeud" aria-hidden="true">${icone(etape.icone)}</div>
+      <div class="etape__carte">
+        <button class="etape__ouvrir" type="button" data-ouvrir="${etape.id}"
+                aria-label="Ouvrir le modele : ${echapper(etape.titre)}">
+          <div class="etape__entete">
+            <span class="etape__num">${numero}</span>
+            <span class="etape__temps">${echapper(etape.temps_moyen)}</span>
           </div>
-          <h3 class="step__title">${surligner(etape.titre, terme)}</h3>
-          <p class="step__desc">${surligner(etape.description, terme)}</p>
-          <div class="step__vars">${chips}${reste}</div>
+          <h2 class="etape__titre">${surligner(etape.titre, terme)}</h2>
+          <p class="etape__desc">${surligner(etape.description, terme)}</p>
         </button>
-        <div class="step__tools">
+        <div class="etape__pied">
+          <span class="badge">${surligner(badge, terme)}</span>
+          <span class="tag">${etape.categories.map(c => surligner(c, terme)).join(", ")}</span>
+          <span class="pied__spacer"></span>
+          <button class="tool" type="button" data-copier-id="${etape.id}"
+                  title="Copier le message" aria-label="Copier le message de l'etape ${echapper(etape.titre)}">
+            ${icone("copy")}
+          </button>
           <button class="tool" type="button" data-telecharger-id="${etape.id}"
-                  title="Télécharger le message"
-                  aria-label="Télécharger le message de l'étape ${echapper(etape.titre)}">
+                  title="Telecharger" aria-label="Telecharger le message de l'etape ${echapper(etape.titre)}">
             ${icone("download")}
           </button>
           <button class="tool" type="button" data-imprimer-id="${etape.id}"
-                  title="Imprimer ou enregistrer en PDF"
-                  aria-label="Imprimer le message de l'étape ${echapper(etape.titre)}">
+                  title="Imprimer" aria-label="Imprimer le message de l'etape ${echapper(etape.titre)}">
             ${icone("print")}
-          </button>
-          <button class="tool tool--fait" type="button" data-fait-id="${etape.id}"
-                  aria-pressed="${fait}" title="Marquer comme faite"
-                  aria-label="Marquer l'étape ${echapper(etape.titre)} comme faite">
-            ${icone("check")}
-          </button>
-          <button class="tool tool--fav" type="button" data-fav-id="${etape.id}"
-                  aria-pressed="${favori}" title="Ajouter aux favoris"
-                  aria-label="Ajouter ${echapper(etape.titre)} aux favoris">
-            ${icone("star", "icon-star-o")}
-            <svg class="icon-star-f" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><use href="#i-star"/></svg>
           </button>
         </div>
       </div>
@@ -1884,84 +1243,91 @@ function carteEtape(etape, terme, idCourant) {
 }
 
 /**
- * Reconstruit la frise complète.
- * Un seul accès au DOM : le balisage est assemblé en mémoire puis injecté.
+ * Reconstruit la frise complete.
+ * Un seul acces au DOM : le balisage est assemble en memoire puis injecte.
  * @returns {void}
  */
 function rendreFrise() {
   const visibles = etapesVisibles();
   const terme = etat.recherche.trim();
-  const idCourant = etapeCourante();
   const frise = $("#frise");
 
-  frise.classList.toggle("is-filtered", visibles.length !== etat.etapes.length);
-  frise.innerHTML = visibles.map(etape => carteEtape(etape, terme, idCourant)).join("");
+  frise.innerHTML = visibles.map((etape, i) => bloccEtape(etape, terme, i)).join("");
 
-  $("#etat-vide").hidden = visibles.length > 0;
-  frise.hidden = visibles.length === 0;
+  const vide = visibles.length === 0;
+  $("#piste-zone").hidden = vide;
+  $("#piste-aide").hidden = vide;
+  $("#etat-vide").hidden = !vide;
+
+  $("#piste").scrollLeft = 0;
+  majDefilement();
 }
 
 /**
- * Rafraîchit l'ensemble de l'interface.
+ * Met a jour les indicateurs de debut et de fin de piste, qui pilotent
+ * l'affichage des fondus lateraux et des boutons de defilement.
  * @returns {void}
  */
-function rendreTout() {
-  rendreStats();
-  rendreProgression();
-  rendreFiltres();
-  rendreRecents();
-  rendreFrise();
+function majDefilement() {
+  const piste = $("#piste");
+  const zone = $("#piste-zone");
+  const reste = piste.scrollWidth - piste.clientWidth;
+
+  zone.setAttribute("data-debut", String(piste.scrollLeft <= 4));
+  zone.setAttribute("data-fin", String(reste <= 4 || piste.scrollLeft >= reste - 4));
+}
+
+/**
+ * Fait defiler la piste d'une etape.
+ * @param {number} sens -1 vers la gauche, 1 vers la droite.
+ * @returns {void}
+ */
+function defiler(sens) {
+  const piste = $("#piste");
+  const premiere = piste.querySelector(".etape");
+  const pas = premiere ? premiere.getBoundingClientRect().width : 320;
+  piste.scrollBy({ left: sens * pas, behavior: "smooth" });
 }
 
 /* ==========================================================================
-   7. TIROIR
+   6. TIROIR
    ========================================================================== */
 
 /**
- * Ouvre le tiroir sur une étape donnée.
- * @param {number|string} id Identifiant de l'étape.
+ * Ouvre le tiroir sur une etape donnee.
+ * @param {number|string} id Identifiant de l'etape.
  * @returns {void}
  */
 function ouvrirTiroir(id) {
-  const etape = etat.etapes.find(e => String(e.id) === String(id));
+  const etape = trouverEtape(id);
   if (!etape) return;
 
   etat.etapeOuverte = etape;
-  etat.texteModifie = false;
   etat.dernierFocus = document.activeElement;
 
   const drawer = $("#drawer");
   drawer.setAttribute("data-couleur", etape.couleur);
-  $("#drawer-num").textContent = "Étape " + String(etape.numero).padStart(2, "0");
+  drawer.scrollTop = 0;
+  $(".drawer__body").scrollTop = 0;
+
+  $("#drawer-num").textContent = "Etape " + String(etape.numero).padStart(2, "0");
   $("#drawer-badge").textContent = etape.badge || etape.categories[0];
   $("#drawer-temps").textContent = etape.temps_moyen;
   $("#drawer-titre").textContent = etape.titre;
   $("#drawer-desc").textContent = etape.description;
-
-  $("#btn-fav-drawer").setAttribute("aria-pressed", String(etat.favoris.has(etape.id)));
-  $("#btn-restaurer").hidden = true;
-  $("#drawer-destinataire").value = etat.destinataire;
-  basculerMenuEnvoi(false);
-
-  rendreChamps(etape);
-  rafraichirApercu();
+  $("#drawer-objet").innerHTML = marquerVariables(etape.objet);
+  $("#drawer-texte").innerHTML = marquerVariables(etape.template);
 
   drawer.classList.add("is-open");
   drawer.setAttribute("aria-hidden", "false");
   $("#scrim").hidden = false;
   requestAnimationFrame(() => $("#scrim").classList.add("is-open"));
   document.body.style.overflow = "hidden";
-
-  /* Le focus part sur le premier champ vide, ou sur le bouton de fermeture. */
-  const premierVide = $$("#drawer-champs .input").find(i => !i.value);
-  (premierVide || $("#drawer-close")).focus();
-
-  enregistrerHistorique(etape.id);
+  $("#btn-copier").focus();
 }
 
-/** Ferme le tiroir et restaure le focus précédent. @returns {void} */
+/** Ferme le tiroir et restaure le focus precedent. @returns {void} */
 function fermerTiroir() {
-  basculerMenuEnvoi(false);
   const drawer = $("#drawer");
   drawer.classList.remove("is-open");
   drawer.setAttribute("aria-hidden", "true");
@@ -1973,79 +1339,23 @@ function fermerTiroir() {
 }
 
 /**
- * Construit le formulaire des variables de l'étape ouverte.
- * @param {Object} etape Étape normalisée.
- * @returns {void}
+ * Retrouve une etape par son identifiant.
+ * @param {number|string} id Identifiant recherche.
+ * @returns {Object|undefined} Etape correspondante.
  */
-function rendreChamps(etape) {
-  const conteneur = $("#drawer-champs");
-
-  conteneur.innerHTML = etape.variables.map(nom => {
-    const libelle = LIBELLES[nom] || nom.replace(/_/g, " ");
-    const valeur = etat.valeurs[nom] || "";
-    const exemple = EXEMPLES[nom] || "";
-    const pleineLargeur = /^(vehicule|modele|objet)$/.test(nom) ? " field--full" : "";
-    return `
-      <div class="field${pleineLargeur}">
-        <label for="v-${echapper(nom)}">${echapper(libelle)}</label>
-        <input class="input" id="v-${echapper(nom)}" type="text" data-variable="${echapper(nom)}"
-               value="${echapper(valeur)}" placeholder="${echapper(exemple)}" autocomplete="off">
-      </div>
-    `;
-  }).join("");
-
-  $(".field-group--form").hidden = etape.variables.length === 0;
-}
-
-/**
- * Recalcule l'objet, le message et le compteur de champs manquants.
- * N'écrase pas le message si le commercial l'a modifié à la main.
- * @returns {void}
- */
-function rafraichirApercu() {
-  const etape = etat.etapeOuverte;
-  if (!etape) return;
-
-  $("#drawer-objet").value = appliquerVariables(etape.objet, etat.valeurs);
-
-  if (!etat.texteModifie) {
-    $("#drawer-texte").value = appliquerVariables(etape.template, etat.valeurs);
-  }
-
-  const manquants = etape.variables.filter(v => !etat.valeurs[v] || !etat.valeurs[v].trim());
-  const note = $("#note-manquants");
-  if (manquants.length) {
-    note.textContent = manquants.length === 1
-      ? "1 champ à compléter"
-      : `${manquants.length} champs à compléter`;
-    note.setAttribute("data-manquant", "true");
-  } else {
-    note.textContent = "Tout est renseigné";
-    note.setAttribute("data-manquant", "false");
-  }
-}
-
-/**
- * Ajoute une étape en tête de l'historique de consultation.
- * @param {number} id Identifiant de l'étape consultée.
- * @returns {void}
- */
-function enregistrerHistorique(id) {
-  etat.historique = [id, ...etat.historique.filter(x => x !== id)].slice(0, HISTORIQUE_MAX);
-  ecrire(CLES.historique, etat.historique);
-  rendreStats();
-  rendreRecents();
+function trouverEtape(id) {
+  return etat.etapes.find(e => String(e.id) === String(id));
 }
 
 /* ==========================================================================
-   8. ACTIONS
+   7. ACTIONS
    ========================================================================== */
 
 /**
  * Copie un texte dans le presse-papiers, avec repli pour les contextes non
- * sécurisés (ouverture du fichier en local).
- * @param {string} texte Texte à copier.
- * @returns {Promise<boolean>} Succès de l'opération.
+ * securises comme l'ouverture du fichier en local.
+ * @param {string} texte Texte a copier.
+ * @returns {Promise<boolean>} Succes de l'operation.
  */
 async function copierTexte(texte) {
   try {
@@ -2053,7 +1363,7 @@ async function copierTexte(texte) {
       await navigator.clipboard.writeText(texte);
       return true;
     }
-    throw new Error("clipboard indisponible");
+    throw new Error("presse-papiers indisponible");
   } catch (e) {
     const zone = document.createElement("textarea");
     zone.value = texte;
@@ -2069,23 +1379,13 @@ async function copierTexte(texte) {
 }
 
 /**
- * Transforme un titre en nom de fichier sûr.
- * @param {string} texte Texte source.
- * @returns {string} Chaîne en minuscules, sans accent ni caractère spécial.
- */
-function slug(texte) {
-  return normaliser(texte).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
-}
-
-/**
- * Déclenche le téléchargement d'un fichier généré dans le navigateur.
- * @param {string} nom Nom du fichier proposé.
+ * Declenche le telechargement d'un fichier genere dans le navigateur.
+ * @param {string} nom Nom du fichier propose.
  * @param {string} contenu Contenu du fichier.
- * @param {string} type Type MIME.
  * @returns {void}
  */
-function telechargerFichier(nom, contenu, type = "text/plain;charset=utf-8") {
-  const blob = new Blob(["\uFEFF" + contenu], { type });
+function telechargerFichier(nom, contenu) {
+  const blob = new Blob(["\uFEFF" + contenu], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const lien = document.createElement("a");
   lien.href = url;
@@ -2097,60 +1397,33 @@ function telechargerFichier(nom, contenu, type = "text/plain;charset=utf-8") {
 }
 
 /**
- * Renvoie l'objet et le message d'une étape, variables déjà appliquées.
- * Utilisé par les boutons de la frise, où le tiroir n'est pas ouvert.
- * @param {Object} etape Étape normalisée.
- * @returns {{objet:string, corps:string}} Contenu personnalisé.
- */
-function contenuEtape(etape) {
-  return {
-    objet: appliquerVariables(etape.objet, etat.valeurs),
-    corps: appliquerVariables(etape.template, etat.valeurs)
-  };
-}
-
-/**
- * Renvoie le contenu actuellement affiché dans le tiroir, édition manuelle
- * comprise, ou le contenu généré si le tiroir n'est pas ouvert sur l'étape.
- * @param {Object} etape Étape normalisée.
- * @returns {{objet:string, corps:string}} Contenu à utiliser.
- */
-function contenuCourant(etape) {
-  if (etat.etapeOuverte && etat.etapeOuverte.id === etape.id) {
-    return { objet: $("#drawer-objet").value, corps: $("#drawer-texte").value };
-  }
-  return contenuEtape(etape);
-}
-
-/**
- * Télécharge le message d'une étape au format texte.
- * @param {Object} etape Étape normalisée.
+ * Telecharge le modele d'une etape au format texte.
+ * @param {Object} etape Etape normalisee.
  * @returns {void}
  */
 function telechargerEtape(etape) {
-  const { objet, corps } = contenuCourant(etape);
   const numero = String(etape.numero).padStart(2, "0");
-  const contenu = `Objet : ${objet}\n\n${corps}\n`;
-  telechargerFichier(`${numero}-${slug(etape.titre)}.txt`, contenu);
-  notifier("Message téléchargé");
+  telechargerFichier(
+    `${numero}-${slug(etape.titre)}.txt`,
+    `Objet : ${etape.objet}\n\n${etape.template}\n`
+  );
+  notifier("Modele telecharge");
 }
 
 /**
- * Ouvre la fenêtre d'impression du navigateur, qui permet aussi
+ * Ouvre la fenetre d'impression du navigateur, qui permet aussi
  * l'enregistrement au format PDF.
- * @param {Object} etape Étape normalisée.
+ * @param {Object} etape Etape normalisee.
  * @returns {void}
  */
 function imprimerEtape(etape) {
-  const { objet, corps } = contenuCourant(etape);
-
   const fenetre = window.open("", "_blank", "width=720,height=900");
-  if (!fenetre) { notifier("Autorisez les fenêtres pour imprimer"); return; }
+  if (!fenetre) { notifier("Autorisez les fenetres pour imprimer"); return; }
 
-  const contenu = `<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">
-    <title>${echapper(objet)}</title>
+  fenetre.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">
+    <title>${echapper(etape.objet)}</title>
     <style>
-      body{font:14px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+      body{font:14px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
            color:#121a16; max-width:680px; margin:48px auto; padding:0 24px;}
       .eyebrow{font:600 11px/1 ui-monospace,monospace; letter-spacing:.08em;
                text-transform:uppercase; color:#B08D33; margin-bottom:12px;}
@@ -2160,280 +1433,29 @@ function imprimerEtape(etape) {
       footer{margin-top:32px; padding-top:16px; border-top:1px solid #e2e4de;
              font-size:11px; color:#8a948b;}
     </style></head><body>
-      <div class="eyebrow">Étape ${String(etape.numero).padStart(2, "0")} · ${echapper(etape.categories.join(" / "))}</div>
-      <h1>${echapper(objet)}</h1>
-      <pre>${echapper(corps)}</pre>
-      <footer>Arc de Triomphe Autos · imprimé le ${new Date().toLocaleDateString("fr-FR")}</footer>
-    </body></html>`;
-
-  fenetre.document.write(contenu);
+      <div class="eyebrow">Etape ${String(etape.numero).padStart(2, "0")} · ${echapper(etape.categories.join(" / "))}</div>
+      <h1>${echapper(etape.objet)}</h1>
+      <pre>${echapper(etape.template)}</pre>
+      <footer>Arc de Triomphe Autos · imprime le ${new Date().toLocaleDateString("fr-FR")}</footer>
+    </body></html>`);
   fenetre.document.close();
   fenetre.focus();
   setTimeout(() => fenetre.print(), 300);
 }
 
-/* --------------------------------------------------------------------------
-   ENVOI ET ARCHIVAGE
- -------------------------------------------------------------------------- */
-
-/** Construit le menu de choix de messagerie. @returns {void} */
-function rendreMenuEnvoi() {
-  const prefere = lire(CLES.messagerie, null);
-  const ordonnees = prefere
-    ? [...MESSAGERIES].sort((a, b) => (b.id === prefere) - (a.id === prefere))
-    : MESSAGERIES;
-
-  $("#menu-envoi").innerHTML =
-    `<div class="menu__titre">Envoyer avec</div>` +
-    ordonnees.map(m => `
-      <button class="menu__item" type="button" role="menuitem" data-messagerie="${m.id}">
-        ${echapper(m.nom)}${m.id === prefere ? " ·" : ""}
-        <small>${echapper(m.note)}</small>
-      </button>
-    `).join("");
-}
-
-/**
- * Ouvre ou ferme le menu de choix de messagerie.
- * @param {boolean} [forcer] État souhaité ; bascule si omis.
- * @returns {void}
- */
-function basculerMenuEnvoi(forcer) {
-  const menu = $("#menu-envoi");
-  const ouvrir = forcer === undefined ? menu.hidden : forcer;
-  if (ouvrir) rendreMenuEnvoi();
-  menu.hidden = !ouvrir;
-  $("#btn-mail").setAttribute("aria-expanded", String(ouvrir));
-}
-
-/**
- * Ouvre la messagerie choisie avec le message pré-rempli, puis archive l'envoi.
- * @param {string} idMessagerie Identifiant de la messagerie choisie.
- * @returns {void}
- */
-function envoyer(idMessagerie) {
-  const etape = etat.etapeOuverte;
-  if (!etape) return;
-
-  const messagerie = MESSAGERIES.find(m => m.id === idMessagerie);
-  if (!messagerie) return;
-
-  const destinataire = $("#drawer-destinataire").value.trim();
-  const objet = $("#drawer-objet").value;
-  const corps = $("#drawer-texte").value;
-
-  if (!destinataire) {
-    notifier("Renseignez d'abord le destinataire");
-    basculerMenuEnvoi(false);
-    $("#drawer-destinataire").focus();
-    return;
-  }
-
-  const lien = messagerie.url(destinataire, objet, corps);
-  if (messagerie.externe) window.open(lien, "_blank", "noopener");
-  else window.location.href = lien;
-
-  ecrire(CLES.messagerie, messagerie.id);
-  archiverEnvoi(etape, destinataire, objet, corps, messagerie.nom);
-  basculerMenuEnvoi(false);
-  notifier("Message préparé dans " + messagerie.nom);
-}
-
-/**
- * Enregistre un envoi dans l'archive locale.
- * @param {Object} etape Étape concernée.
- * @param {string} destinataire Adresse du destinataire.
- * @param {string} objet Objet du message.
- * @param {string} corps Contenu du message.
- * @param {string} canal Nom de la messagerie utilisée.
- * @returns {void}
- */
-function archiverEnvoi(etape, destinataire, objet, corps, canal) {
-  const envoi = {
-    ref: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-    date: new Date().toISOString(),
-    etapeId: etape.id,
-    etape: etape.titre,
-    numero: etape.numero,
-    couleur: etape.couleur,
-    destinataire, objet, corps, canal
-  };
-
-  etat.envois = [envoi, ...etat.envois].slice(0, ARCHIVE_MAX);
-  ecrire(CLES.envois, etat.envois);
-  rendreStats();
-  rendreEnvois();
-}
-
-/**
- * Met en forme une date ISO pour l'affichage.
- * @param {string} iso Date au format ISO.
- * @returns {string} Date lisible en français.
- */
-function formaterDate(iso) {
-  const d = new Date(iso);
-  return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "2-digit" })
-       + " · " + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-}
-
-/** Renvoie les envois correspondant au filtre de recherche. @returns {Array<Object>} */
-function envoisVisibles() {
-  const terme = normaliser(etat.rechercheEnvois.trim());
-  if (!terme) return etat.envois;
-  return etat.envois.filter(e =>
-    normaliser([e.destinataire, e.objet, e.corps, e.etape, e.canal].join(" ")).includes(terme)
-  );
-}
-
-/** Reconstruit la liste des messages envoyés. @returns {void} */
-function rendreEnvois() {
-  const liste = envoisVisibles();
-  const zone = $("#liste-envois");
-  const terme = etat.rechercheEnvois.trim();
-
-  $("#onglet-envois-compte").textContent = etat.envois.length;
-  $("#etat-envois-vide").hidden = liste.length > 0;
-
-  if (!liste.length) {
-    zone.innerHTML = "";
-    if (etat.envois.length) {
-      $("#etat-envois-vide").querySelector("h2").textContent = "Aucun message ne correspond";
-      $("#etat-envois-vide").querySelector("p").textContent =
-        "Essayez un autre mot-clé : destinataire, objet ou contenu du message.";
-    }
-    return;
-  }
-
-  zone.innerHTML = liste.map(e => {
-    const ouvert = etat.envoiOuvert === e.ref;
-    return `
-      <article class="envoi" data-couleur="${echapper(e.couleur || "slate")}">
-        <button class="envoi__head" type="button" data-detail="${e.ref}"
-                aria-expanded="${ouvert}">
-          <span class="envoi__date">${echapper(formaterDate(e.date))}</span>
-          <span class="envoi__corps">
-            <span class="envoi__objet">${surligner(e.objet, terme)}</span>
-            <span class="envoi__meta">
-              <span class="envoi__canal">${echapper(e.canal)}</span>
-              <span>${surligner(e.destinataire, terme)}</span>
-              <span class="dot-sep" aria-hidden="true">·</span>
-              <span>Étape ${String(e.numero).padStart(2, "0")} · ${surligner(e.etape, terme)}</span>
-            </span>
-          </span>
-        </button>
-        ${ouvert ? `
-        <div class="envoi__detail">
-          <div class="envoi__texte">${surligner(e.corps, terme)}</div>
-          <div class="envoi__actions">
-            <button class="btn btn--sm" type="button" data-copier-envoi="${e.ref}">Copier</button>
-            <button class="btn btn--sm" type="button" data-telecharger-envoi="${e.ref}">Télécharger</button>
-            <button class="btn btn--sm" type="button" data-rouvrir-envoi="${e.ref}">Rouvrir l'étape</button>
-            <button class="btn btn--sm btn--ghost" type="button" data-supprimer-envoi="${e.ref}">Supprimer</button>
-          </div>
-        </div>` : ""}
-      </article>
-    `;
-  }).join("");
-}
-
-/**
- * Bascule entre la vue parcours et la vue des messages envoyés.
- * @param {string} vue Identifiant de la vue : "parcours" ou "envois".
- * @returns {void}
- */
-function changerVue(vue) {
-  etat.vue = vue;
-  const parcours = vue === "parcours";
-
-  $("#vue-parcours").hidden = !parcours;
-  $("#vue-envois").hidden = parcours;
-  $("#barre-filtres").hidden = !parcours;
-  $("#recents").hidden = !parcours || etat.historique.length === 0;
-  $(".progress").hidden = !parcours;
-
-  $$(".viewtab").forEach(b =>
-    b.setAttribute("aria-selected", String(b.dataset.vue === vue)));
-
-  if (!parcours) rendreEnvois();
-}
-
-/** Exporte l'archive au format CSV, lisible par Excel. @returns {void} */
-function exporterCSV() {
-  if (!etat.envois.length) { notifier("Aucun message à exporter"); return; }
-
-  const cellule = v => `"${String(v).replace(/"/g, '""')}"`;
-  const lignes = [
-    ["Date", "Étape", "Numéro", "Destinataire", "Objet", "Messagerie", "Message"].join(";")
-  ];
-  etat.envois.forEach(e => lignes.push([
-    formaterDate(e.date), e.etape, e.numero, e.destinataire, e.objet, e.canal, e.corps
-  ].map(cellule).join(";")));
-
-  const date = new Date().toISOString().slice(0, 10);
-  telechargerFichier(`arc-messages-envoyes-${date}.csv`, lignes.join("\r\n"), "text/csv;charset=utf-8");
-  notifier(etat.envois.length + " messages exportés");
-}
-
-/** Exporte l'archive complète au format JSON. @returns {void} */
-function exporterJSON() {
-  if (!etat.envois.length) { notifier("Aucun message à exporter"); return; }
-  const date = new Date().toISOString().slice(0, 10);
-  telechargerFichier(
-    `arc-messages-envoyes-${date}.json`,
-    JSON.stringify({ exporte_le: new Date().toISOString(), envois: etat.envois }, null, 2),
-    "application/json;charset=utf-8"
-  );
-  notifier("Sauvegarde téléchargée");
-}
-
-/**
- * Ajoute ou retire une étape des favoris.
- * @param {number|string} id Identifiant de l'étape.
- * @returns {void}
- */
-function basculerFavori(id) {
-  const cle = Number(id);
-  if (etat.favoris.has(cle)) etat.favoris.delete(cle);
-  else etat.favoris.add(cle);
-
-  ecrire(CLES.favoris, Array.from(etat.favoris));
-  rendreStats();
-  rendreFiltres();
-  rendreFrise();
-
-  if (etat.etapeOuverte && etat.etapeOuverte.id === cle) {
-    $("#btn-fav-drawer").setAttribute("aria-pressed", String(etat.favoris.has(cle)));
-  }
-}
-
-/**
- * Marque une étape comme faite ou non faite.
- * @param {number|string} id Identifiant de l'étape.
- * @returns {void}
- */
-function basculerFait(id) {
-  const cle = Number(id);
-  if (etat.faits.has(cle)) etat.faits.delete(cle);
-  else etat.faits.add(cle);
-
-  ecrire(CLES.faits, Array.from(etat.faits));
-  rendreProgression();
-  rendreFrise();
-}
-
 /* ==========================================================================
-   9. ÉVÉNEMENTS
+   8. EVENEMENTS
    ========================================================================== */
 
 /**
- * Branche tous les écouteurs.
- * La frise, les filtres et les récents utilisent la délégation d'événements :
- * un seul écouteur suffit, quel que soit le nombre d'étapes.
+ * Branche tous les ecouteurs.
+ * La frise utilise la delegation d'evenements : un seul ecouteur suffit,
+ * quel que soit le nombre d'etapes.
  * @returns {void}
  */
 function brancherEvenements() {
 
-  /* --- Recherche, avec léger différé pour éviter les rendus inutiles --- */
+  /* --- Recherche, avec leger differe pour eviter les rendus inutiles --- */
   let minuteurRecherche = null;
   $("#recherche").addEventListener("input", (evt) => {
     clearTimeout(minuteurRecherche);
@@ -2444,124 +1466,71 @@ function brancherEvenements() {
     }, 120);
   });
 
-  /* --- Filtres --- */
-  $("#filtres").addEventListener("click", (evt) => {
-    const bouton = evt.target.closest("[data-filtre]");
-    if (!bouton) return;
-    const valeur = bouton.dataset.filtre;
-
-    if (valeur === "__tous") {
-      etat.filtres.clear();
-      etat.favorisSeuls = false;
-    } else if (valeur === "__favoris") {
-      etat.favorisSeuls = !etat.favorisSeuls;
-    } else {
-      if (etat.filtres.has(valeur)) etat.filtres.delete(valeur);
-      else etat.filtres.add(valeur);
-    }
-    rendreFiltres();
+  $("#btn-reset").addEventListener("click", () => {
+    etat.recherche = "";
+    $("#recherche").value = "";
     rendreFrise();
+    $("#recherche").focus();
   });
 
-  /* --- Frise : ouverture, favori, étape faite --- */
+  /* --- Frise --- */
   $("#frise").addEventListener("click", (evt) => {
     const ouvrir = evt.target.closest("[data-ouvrir]");
     if (ouvrir) { ouvrirTiroir(ouvrir.dataset.ouvrir); return; }
 
-    const fav = evt.target.closest("[data-fav-id]");
-    if (fav) { basculerFavori(fav.dataset.favId); return; }
-
-    const fait = evt.target.closest("[data-fait-id]");
-    if (fait) { basculerFait(fait.dataset.faitId); return; }
+    const copie = evt.target.closest("[data-copier-id]");
+    if (copie) {
+      const etape = trouverEtape(copie.dataset.copierId);
+      if (etape) copierTexte(etape.template).then(ok =>
+        notifier(ok ? "Message copie" : "Copie impossible"));
+      return;
+    }
 
     const dl = evt.target.closest("[data-telecharger-id]");
     if (dl) {
-      const etape = etat.etapes.find(e => String(e.id) === dl.dataset.telechargerId);
+      const etape = trouverEtape(dl.dataset.telechargerId);
       if (etape) telechargerEtape(etape);
       return;
     }
 
     const imp = evt.target.closest("[data-imprimer-id]");
     if (imp) {
-      const etape = etat.etapes.find(e => String(e.id) === imp.dataset.imprimerId);
+      const etape = trouverEtape(imp.dataset.imprimerId);
       if (etape) imprimerEtape(etape);
-      return;
     }
   });
 
-  /* --- Récents --- */
-  $("#recents").addEventListener("click", (evt) => {
-    const bouton = evt.target.closest("[data-ouvrir]");
-    if (bouton) ouvrirTiroir(bouton.dataset.ouvrir);
+  /* --- Defilement de la piste --- */
+  $("#btn-prec").addEventListener("click", () => defiler(-1));
+  $("#btn-suiv").addEventListener("click", () => defiler(1));
+  $("#piste").addEventListener("scroll", majDefilement, { passive: true });
+  window.addEventListener("resize", majDefilement);
+
+  /* Fleches du clavier quand la piste a le focus */
+  $("#piste").addEventListener("keydown", (evt) => {
+    if (evt.key === "ArrowRight") { evt.preventDefault(); defiler(1); }
+    if (evt.key === "ArrowLeft")  { evt.preventDefault(); defiler(-1); }
   });
 
-  /* --- Réinitialisation depuis l'état vide --- */
-  $("#btn-reset").addEventListener("click", () => {
-    etat.recherche = "";
-    etat.filtres.clear();
-    etat.favorisSeuls = false;
-    $("#recherche").value = "";
-    rendreFiltres();
-    rendreFrise();
-    $("#recherche").focus();
-  });
+  /* Molette verticale convertie en defilement horizontal, comme attendu
+     sur une frise qui se lit dans la largeur. */
+  $("#piste").addEventListener("wheel", (evt) => {
+    if (Math.abs(evt.deltaY) <= Math.abs(evt.deltaX)) return;
+    evt.preventDefault();
+    $("#piste").scrollBy({ left: evt.deltaY, behavior: "auto" });
+  }, { passive: false });
 
-  /* --- Champs de variables : mise à jour en temps réel --- */
-  $("#drawer-champs").addEventListener("input", (evt) => {
-    const champ = evt.target.closest("[data-variable]");
-    if (!champ) return;
-
-    etat.valeurs[champ.dataset.variable] = champ.value;
-
-    /* Seules les informations du commercial sont conservées entre deux
-       templates ; les données client sont volontairement non persistées. */
-    const aConserver = {};
-    VARIABLES_PERSISTANTES.forEach(nom => {
-      if (etat.valeurs[nom]) aConserver[nom] = etat.valeurs[nom];
-    });
-    ecrire(CLES.valeurs, aConserver);
-
-    rafraichirApercu();
-  });
-
-  /* --- Édition manuelle du message --- */
-  $("#drawer-texte").addEventListener("input", () => {
-    etat.texteModifie = true;
-    $("#btn-restaurer").hidden = false;
-  });
-
-  $("#btn-restaurer").addEventListener("click", () => {
-    etat.texteModifie = false;
-    $("#btn-restaurer").hidden = true;
-    rafraichirApercu();
-    notifier("Modèle restauré");
-  });
-
-  /* --- Actions du tiroir --- */
+  /* --- Tiroir --- */
   $("#btn-copier").addEventListener("click", async () => {
-    const ok = await copierTexte($("#drawer-texte").value);
-    notifier(ok ? "Message copié" : "Copie impossible, sélectionnez le texte");
+    if (!etat.etapeOuverte) return;
+    const ok = await copierTexte(etat.etapeOuverte.template);
+    notifier(ok ? "Message copie" : "Copie impossible, selectionnez le texte");
   });
 
-  $("#btn-mail").addEventListener("click", (evt) => {
-    evt.stopPropagation();
-    basculerMenuEnvoi();
-  });
-
-  $("#menu-envoi").addEventListener("click", (evt) => {
-    const choix = evt.target.closest("[data-messagerie]");
-    if (choix) envoyer(choix.dataset.messagerie);
-  });
-
-  /* Fermer le menu au clic à l'extérieur. */
-  document.addEventListener("click", (evt) => {
-    if (!$("#menu-envoi").hidden && !evt.target.closest(".menu-wrap")) {
-      basculerMenuEnvoi(false);
-    }
-  });
-
-  $("#drawer-destinataire").addEventListener("input", (evt) => {
-    etat.destinataire = evt.target.value;
+  $("#btn-copier-objet").addEventListener("click", async () => {
+    if (!etat.etapeOuverte) return;
+    const ok = await copierTexte(etat.etapeOuverte.objet);
+    notifier(ok ? "Objet copie" : "Copie impossible");
   });
 
   $("#btn-telecharger").addEventListener("click", () => {
@@ -2572,98 +1541,14 @@ function brancherEvenements() {
     if (etat.etapeOuverte) imprimerEtape(etat.etapeOuverte);
   });
 
-  /* --- Onglets de vue --- */
-  $$(".viewtab").forEach(bouton => {
-    bouton.addEventListener("click", () => changerVue(bouton.dataset.vue));
-  });
-
-  /* --- Archive des messages envoyés --- */
-  let minuteurArchive = null;
-  $("#recherche-envois").addEventListener("input", (evt) => {
-    clearTimeout(minuteurArchive);
-    const valeur = evt.target.value;
-    minuteurArchive = setTimeout(() => {
-      etat.rechercheEnvois = valeur;
-      rendreEnvois();
-    }, 120);
-  });
-
-  $("#liste-envois").addEventListener("click", (evt) => {
-    const detail = evt.target.closest("[data-detail]");
-    if (detail) {
-      const ref = detail.dataset.detail;
-      etat.envoiOuvert = etat.envoiOuvert === ref ? null : ref;
-      rendreEnvois();
-      return;
-    }
-
-    const cible = evt.target.closest("[data-copier-envoi], [data-telecharger-envoi], " +
-                                    "[data-rouvrir-envoi], [data-supprimer-envoi]");
-    if (!cible) return;
-
-    const ref = cible.dataset.copierEnvoi || cible.dataset.telechargerEnvoi
-             || cible.dataset.rouvrirEnvoi || cible.dataset.supprimerEnvoi;
-    const envoi = etat.envois.find(e => e.ref === ref);
-    if (!envoi) return;
-
-    if (cible.dataset.copierEnvoi) {
-      copierTexte(envoi.corps).then(ok => notifier(ok ? "Message copié" : "Copie impossible"));
-
-    } else if (cible.dataset.telechargerEnvoi) {
-      telechargerFichier(
-        `${envoi.date.slice(0, 10)}-${slug(envoi.destinataire)}.txt`,
-        `Date : ${formaterDate(envoi.date)}\nÀ : ${envoi.destinataire}\nObjet : ${envoi.objet}\n\n${envoi.corps}\n`
-      );
-      notifier("Message téléchargé");
-
-    } else if (cible.dataset.rouvrirEnvoi) {
-      changerVue("parcours");
-      etat.destinataire = envoi.destinataire;
-      ouvrirTiroir(envoi.etapeId);
-
-    } else if (cible.dataset.supprimerEnvoi) {
-      etat.envois = etat.envois.filter(e => e.ref !== ref);
-      ecrire(CLES.envois, etat.envois);
-      rendreStats();
-      rendreEnvois();
-      notifier("Message retiré de l'archive");
-    }
-  });
-
-  $("#btn-export-csv").addEventListener("click", exporterCSV);
-  $("#btn-export-json").addEventListener("click", exporterJSON);
-
-  $("#btn-vider-envois").addEventListener("click", () => {
-    if (!etat.envois.length) { notifier("L'archive est déjà vide"); return; }
-    const confirme = window.confirm(
-      `Effacer définitivement les ${etat.envois.length} messages archivés ?\n\n` +
-      `Cette action est irréversible. Pensez à exporter une sauvegarde avant.`
-    );
-    if (!confirme) return;
-    etat.envois = [];
-    ecrire(CLES.envois, etat.envois);
-    rendreStats();
-    rendreEnvois();
-    notifier("Archive vidée");
-  });
-  $("#btn-fav-drawer").addEventListener("click", () => {
-    if (etat.etapeOuverte) basculerFavori(etat.etapeOuverte.id);
-  });
-
   $("#drawer-close").addEventListener("click", fermerTiroir);
   $("#scrim").addEventListener("click", fermerTiroir);
 
-  /* --- Bandeau d'avertissement --- */
-  $("#avertissement-fermer").addEventListener("click", () => {
-    $("#avertissement").hidden = true;
-  });
-
-  /* --- Thème --- */
+  /* --- Theme --- */
   $("#btn-theme").addEventListener("click", () => {
-    const actuel = document.documentElement.getAttribute("data-theme");
-    const suivant = actuel === "dark" ? "light" : "dark";
+    const suivant = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", suivant);
-    ecrire(CLES.theme, suivant);
+    try { localStorage.setItem(CLE_THEME, suivant); } catch (e) { /* stockage indisponible */ }
   });
 
   /* --- Raccourcis clavier --- */
@@ -2671,7 +1556,7 @@ function brancherEvenements() {
     if (!evt.key) return;
     const drawerOuvert = $("#drawer").classList.contains("is-open");
 
-    /* Ctrl/Cmd + K : aller à la recherche */
+    /* Ctrl ou Cmd + K : aller a la recherche */
     if ((evt.ctrlKey || evt.metaKey) && evt.key.toLowerCase() === "k") {
       evt.preventDefault();
       if (drawerOuvert) fermerTiroir();
@@ -2680,21 +1565,20 @@ function brancherEvenements() {
       return;
     }
 
-    /* Ctrl/Cmd + C hors sélection : copier le message ouvert */
+    /* Ctrl ou Cmd + C hors selection : copier le modele ouvert */
     if (drawerOuvert && (evt.ctrlKey || evt.metaKey) && evt.key.toLowerCase() === "c") {
       const selection = String(window.getSelection());
       const dansChamp = /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName);
-      if (!selection && !dansChamp) {
+      if (!selection && !dansChamp && etat.etapeOuverte) {
         evt.preventDefault();
-        copierTexte($("#drawer-texte").value).then(ok =>
-          notifier(ok ? "Message copié" : "Copie impossible"));
+        copierTexte(etat.etapeOuverte.template).then(ok =>
+          notifier(ok ? "Message copie" : "Copie impossible"));
       }
       return;
     }
 
-    /* Échap : fermer le tiroir, ou vider la recherche */
+    /* Echap : fermer le tiroir, ou vider la recherche */
     if (evt.key === "Escape") {
-      if (!$("#menu-envoi").hidden) { basculerMenuEnvoi(false); $("#btn-mail").focus(); return; }
       if (drawerOuvert) { fermerTiroir(); return; }
       if (document.activeElement === $("#recherche") && $("#recherche").value) {
         $("#recherche").value = "";
@@ -2704,13 +1588,10 @@ function brancherEvenements() {
       return;
     }
 
-    /* Piège à focus : le tiroir garde le focus tant qu'il est ouvert. */
+    /* Piege a focus : le tiroir garde le focus tant qu'il est ouvert. */
     if (drawerOuvert && evt.key === "Tab") {
-      const focusables = $$(
-        '#drawer button, #drawer input, #drawer textarea, #drawer [href]'
-      ).filter(el => !el.hidden && el.offsetParent !== null);
+      const focusables = $$("#drawer button").filter(el => !el.hidden);
       if (!focusables.length) return;
-
       const premier = focusables[0];
       const dernier = focusables[focusables.length - 1];
 
@@ -2724,56 +1605,38 @@ function brancherEvenements() {
 }
 
 /* ==========================================================================
-   10. DÉMARRAGE
+   9. DEMARRAGE
    ========================================================================== */
 
 /**
- * Initialise l'application : thème, données, rendu, événements.
+ * Initialise l'outil : theme, donnees, rendu, evenements.
  * @returns {Promise<void>}
  */
 async function demarrer() {
-  /* Thème : préférence enregistrée, sinon réglage du système. */
-  const themeEnregistre = lire(CLES.theme, null);
+  /* Theme : preference enregistree, sinon reglage du systeme. */
+  let themeEnregistre = null;
+  try { themeEnregistre = localStorage.getItem(CLE_THEME); } catch (e) { /* ignore */ }
   const sombreSysteme = typeof window.matchMedia === "function"
     && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  document.documentElement.setAttribute(
-    "data-theme",
-    themeEnregistre || (sombreSysteme ? "dark" : "light")
-  );
+  document.documentElement.setAttribute("data-theme",
+    themeEnregistre || (sombreSysteme ? "dark" : "light"));
 
   try {
     const donnees = await chargerDonnees();
     const { etapes, erreurs } = validerDonnees(donnees);
 
     if (!etapes.length) {
-      afficherErreur(
-        "Aucune étape valide n'a pu être lue dans le fichier de données.",
-        erreurs
-      );
+      afficherErreur("Aucune etape valide n'a pu etre lue dans le fichier de donnees.", erreurs);
       return;
     }
-    if (erreurs.length) {
-      /* Certaines étapes sont invalides : les autres restent utilisables,
-         mais l'anomalie est signalée en clair pour être corrigée. */
-      afficherAvertissement(erreurs);
-    }
+    if (erreurs.length) afficherAvertissement(erreurs);
 
     etat.etapes = etapes.filter(e => e.actif);
-
-    /* Favoris par défaut appliqués uniquement au tout premier lancement. */
-    if (lire(CLES.favoris, null) === null) {
-      etat.etapes.forEach(e => { if (e.favori_par_defaut) etat.favoris.add(e.id); });
-      ecrire(CLES.favoris, Array.from(etat.favoris));
-    }
-
-    rendreTout();
+    rendreFrise();
     brancherEvenements();
 
   } catch (erreur) {
-    afficherErreur(
-      "Le fichier de données n'est pas un JSON valide.",
-      [erreur.message]
-    );
+    afficherErreur("Le fichier de donnees n'est pas un JSON valide.", [erreur.message]);
   }
 }
 
