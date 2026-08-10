@@ -215,6 +215,220 @@
 }{
   "meta": {
     "entreprise": "Arc de Triomphe Autos",
+    "version": "1.0"
+  },
+  "etapes": [
+    {
+      "id": 1,
+      "numero": 1,
+      "ordre": 1,
+      "titre": "Premier contact - appel entrant",
+      "description": "Confirmer par écrit ce qui a été dit au téléphone et poser le prochain rendez-vous.",
+      "categorie": [
+        "Prospection",
+        "Premier contact"
+      ],
+      "badge": "📞 Appel",
+      "icone": "phone",
+      "couleur": "blue",
+      "temps_moyen": "J+0",
+      "actif": true,
+      "objet": "Suite à notre échange - {vehicule}",
+      "template_email": "Bonjour {prenom} {nom},\n\nMerci pour votre appel de ce jour au sujet de la {vehicule}.\n\nJe vous confirme les points évoqués ensemble :\n- Véhicule : {vehicule}\n- Disponibilité : véhicule visible sur notre site de {concession}\n- Votre interlocuteur unique : {commercial}\n\nLa prochaine étape la plus simple est un essai, sans engagement. Nous sommes ouverts du lundi au samedi et je peux bloquer un créneau à l'heure qui vous arrange.\n\nDites-moi simplement le jour qui vous convient, ou joignez-moi directement au {telephone}.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
+    },
+    {
+      "id": 2,
+      "numero": 2,
+      "ordre": 2,
+      "titre": "Réponse à une demande en ligne",
+      "description": "Lead reçu via le site, La Centrale ou une annonce. Répondre vite et proposer un créneau.",
+      "categorie": [
+        "Prospection"
+      ],
+      "badge": "🌐 Lead web",
+      "icone": "globe",
+      "couleur": "blue",
+      "temps_moyen": "J+0 · sous 2 h",
+      "actif": true,
+      "objet": "Votre demande concernant la {vehicule}",
+      "template_email": "Bonjour {prenom},\n\nVous venez de nous adresser une demande concernant la {vehicule} et je vous en remercie.\n\nBonne nouvelle : ce véhicule est disponible et visible à notre concession de {concession}.\n\nPour aller au plus vite, je peux vous préparer en une seule visite :\n- l'essai du véhicule,\n- l'estimation de votre voiture actuelle en reprise,\n- une simulation de financement (LOA ou LLD).\n\nQuel jour vous conviendrait cette semaine ? Un simple retour à ce message suffit, ou appelez-moi au {telephone}.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
+    },
+    {
+      "id": 3,
+      "numero": 3,
+      "ordre": 3,
+      "titre": "Confirmation de l'essai",
+      "description": "Verrouiller le rendez-vous : date, adresse, documents à apporter.",
+      "categorie": [
+        "Premier contact"
+      ],
+      "badge": "🗓️ Rendez-vous",
+      "icone": "calendar",
+      "couleur": "teal",
+      "temps_moyen": "J+1",
+      "actif": true,
+      "objet": "Votre essai de la {vehicule} le {date_rendez_vous}",
+      "template_email": "Bonjour {prenom},\n\nJe vous confirme votre essai de la {vehicule} le {date_rendez_vous}, à notre concession de {concession}.\n\nÀ prévoir pour l'essai :\n- votre permis de conduire,\n- la carte grise de votre véhicule actuel si vous souhaitez une estimation de reprise.\n\nComptez environ 45 minutes : nous prendrons le temps de faire un vrai tour d'essai et de répondre à vos questions.\n\nSi un imprévu survient, prévenez-moi au {telephone} et nous décalerons sans difficulté.\n\nÀ très bientôt,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
+    },
+    {
+      "id": 4,
+      "numero": 4,
+      "ordre": 4,
+      "titre": "Relance après essai",
+      "description": "Le client a essayé le véhicule mais n'a pas encore donné suite.",
+      "categorie": [
+        "Relance"
+      ],
+      "badge": "🔄 Relance",
+      "icone": "refresh",
+      "couleur": "amber",
+      "temps_moyen": "J+2 après l'essai",
+      "actif": true,
+      "objet": "Vos impressions sur la {vehicule}",
+      "template_email": "Bonjour {prenom},\n\nJ'espère que l'essai de la {vehicule} vous a plu.\n\nJe voulais simplement savoir ce que vous en avez pensé, et s'il reste des points sur lesquels vous souhaitez y voir plus clair : équipements, budget mensuel, valeur de reprise, délai de livraison.\n\nSi le véhicule vous convient, je peux vous établir une proposition chiffrée dès aujourd'hui. Et s'il ne correspond pas tout à fait à ce que vous cherchiez, dites-le-moi franchement : nous avons d'autres véhicules qui pourraient mieux vous convenir.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
+    },
+    {
+      "id": 5,
+      "numero": 5,
+      "ordre": 5,
+      "titre": "Envoi de la proposition commerciale",
+      "description": "Transmettre le devis avec le détail du prix, de la reprise et des prestations incluses.",
+      "categorie": [
+        "Devis"
+      ],
+      "badge": "📄 Devis",
+      "icone": "file",
+      "couleur": "violet",
+      "temps_moyen": "J+3",
+      "actif": true,
+      "objet": "Votre proposition pour la {vehicule}",
+      "template_email": "Bonjour {prenom} {nom},\n\nComme convenu, vous trouverez ci-joint votre proposition pour la {vehicule} ({modele}).\n\nEn résumé :\n- Prix du véhicule remise déduite : {montant}\n- Reprise de votre véhicule actuel : selon estimation jointe\n- Inclus : préparation esthétique et mécanique, contrôle en {concession}, garantie constructeur\n\nCette proposition est valable 15 jours. Le véhicule reste disponible mais n'est pas réservé tant que la commande n'est pas signée.\n\nJe reste disponible pour en discuter, ajuster le montage financier ou revoir un point précis. Un appel au {telephone} est souvent plus rapide qu'un échange de mails.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
+    },
+    {
+      "id": 6,
+      "numero": 6,
+      "ordre": 6,
+      "titre": "Proposition de financement LOA / LLD",
+      "description": "Présenter le loyer mensuel et les options de financement de manière lisible.",
+      "categorie": [
+        "Financement",
+        "Devis"
+      ],
+      "badge": "💳 Financement",
+      "icone": "card",
+      "couleur": "indigo",
+      "temps_moyen": "J+3",
+      "actif": true,
+      "objet": "Votre simulation de financement - {vehicule}",
+      "template_email": "Bonjour {prenom},\n\nVoici la simulation de financement pour la {vehicule}, telle que nous en avons parlé.\n\nProposition :\n- Loyer mensuel : {montant}\n- Durée et kilométrage : selon le détail joint\n- Inclus : garantie et assistance constructeur\n- En option : entretien, pneumatiques, véhicule de remplacement\n\nLa LOA vous laisse le choix d'acheter le véhicule en fin de contrat ; la LLD vous libère de la question de la revente. Je peux vous chiffrer les deux si vous hésitez.\n\nPour lancer l'étude de financement, il me faut simplement une pièce d'identité, un justificatif de domicile et un RIB.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
+    },
+    {
+      "id": 7,
+      "numero": 7,
+      "ordre": 7,
+      "titre": "Relance devis sans réponse",
+      "description": "Dernière relance sur une proposition restée sans retour. Ton direct, pas insistant.",
+      "categorie": [
+        "Relance",
+        "Devis"
+      ],
+      "badge": "⏰ Sans réponse",
+      "icone": "bell",
+      "couleur": "amber",
+      "temps_moyen": "J+7",
+      "actif": true,
+      "objet": "Votre proposition - {vehicule}",
+      "template_email": "Bonjour {prenom},\n\nJe reviens vers vous au sujet de la proposition envoyée pour la {vehicule}.\n\nSans nouvelles de votre part, je préfère poser la question simplement : ce projet est-il toujours d'actualité ?\n\n- Si oui, dites-moi ce qui vous retient et je verrai ce que je peux faire.\n- Si le budget ne convient pas, j'ai d'autres véhicules dans une gamme différente.\n- Si vous avez changé d'avis, un mot suffit et je cesserai de vous solliciter.\n\nDans tous les cas, merci de m'avoir consulté.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
+    },
+    {
+      "id": 8,
+      "numero": 8,
+      "ordre": 8,
+      "titre": "Confirmation de commande",
+      "description": "Le bon de commande est signé. Rassurer et annoncer la suite.",
+      "categorie": [
+        "Signature"
+      ],
+      "badge": "✅ Signé",
+      "icone": "check",
+      "couleur": "green",
+      "temps_moyen": "J+10",
+      "actif": true,
+      "objet": "Confirmation de votre commande - {vehicule}",
+      "template_email": "Bonjour {prenom} {nom},\n\nVotre commande de la {vehicule} ({modele}) est enregistrée. Merci de votre confiance.\n\nCe qui se passe maintenant :\n1. Nous lançons la préparation du véhicule et le dossier administratif.\n2. Je vous tiens informé de l'avancement, sans que vous ayez à me relancer.\n3. Livraison prévisionnelle : {date_livraison}, à notre concession de {concession}.\n\nÀ préparer de votre côté, sans urgence : votre attestation d'assurance au nom du futur véhicule et votre permis de conduire.\n\nJe reste votre interlocuteur du début à la fin. Pour toute question : {telephone}.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
+    },
+    {
+      "id": 9,
+      "numero": 9,
+      "ordre": 9,
+      "titre": "Point sur le délai de livraison",
+      "description": "Tenir le client informé pendant l'attente, avec ou sans bonne nouvelle.",
+      "categorie": [
+        "Signature"
+      ],
+      "badge": "⏳ En cours",
+      "icone": "clock",
+      "couleur": "slate",
+      "temps_moyen": "J+30",
+      "actif": true,
+      "objet": "Point sur votre {vehicule}",
+      "template_email": "Bonjour {prenom},\n\nUn point rapide sur votre {vehicule}, comme promis.\n\nÉtat d'avancement : le véhicule est en cours de préparation et le dossier administratif suit son cours.\nDate de livraison estimée : {date_livraison}.\n\nJe vous préviendrai dès que la date sera définitivement confirmée, afin que nous fixions ensemble le créneau de remise des clés.\n\nSi vous avez la moindre question d'ici là, appelez-moi au {telephone}.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
+    },
+    {
+      "id": 10,
+      "numero": 10,
+      "ordre": 10,
+      "titre": "Convocation à la livraison",
+      "description": "Fixer la remise des clés et lister ce que le client doit apporter.",
+      "categorie": [
+        "Livraison"
+      ],
+      "badge": "🔑 Livraison",
+      "icone": "key",
+      "couleur": "green",
+      "temps_moyen": "J-3 avant livraison",
+      "actif": true,
+      "objet": "Remise des clés de votre {vehicule} le {date_livraison}",
+      "template_email": "Bonjour {prenom},\n\nVotre {vehicule} est prête. Je vous propose la remise des clés le {date_livraison}, à notre concession de {concession}.\n\nÀ apporter le jour J :\n- votre permis de conduire,\n- votre attestation d'assurance au numéro {immatriculation},\n- le moyen de paiement du solde,\n- la carte grise de votre ancien véhicule s'il est repris.\n\nPrévoyez environ une heure : nous ferons ensemble le tour du véhicule et je vous montrerai les principales fonctions avant votre départ.\n\nConfirmez-moi simplement que ce créneau vous convient.\n\nÀ très bientôt,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
+    },
+    {
+      "id": 11,
+      "numero": 11,
+      "ordre": 11,
+      "titre": "Remerciement après livraison",
+      "description": "Remercier, vérifier que tout va bien et demander un avis.",
+      "categorie": [
+        "Après-vente"
+      ],
+      "badge": "🤝 Merci",
+      "icone": "heart",
+      "couleur": "rose",
+      "temps_moyen": "J+1 après livraison",
+      "actif": true,
+      "objet": "Merci - et bonne route avec votre {vehicule}",
+      "template_email": "Bonjour {prenom},\n\nMerci d'avoir choisi Arc de Triomphe Autos pour votre {vehicule}. J'espère que les premiers kilomètres vous ont donné satisfaction.\n\nSi un point vous semble à revoir, même minime, dites-le-moi directement : c'est plus simple à traiter maintenant.\n\nSi tout est en ordre, un avis de votre part nous aiderait beaucoup. Quelques lignes suffisent, et cela compte réellement pour l'équipe.\n\nJe reste votre contact pour la suite : entretien, question technique ou futur projet. Mon numéro direct : {telephone}.\n\nBonne route,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
+    },
+    {
+      "id": 12,
+      "numero": 12,
+      "ordre": 12,
+      "titre": "Relance entretien et fidélisation",
+      "description": "Reprendre contact plusieurs mois après pour l'entretien ou un nouveau projet.",
+      "categorie": [
+        "Après-vente"
+      ],
+      "badge": "🔧 Atelier",
+      "icone": "wrench",
+      "couleur": "teal",
+      "temps_moyen": "J+180",
+      "actif": true,
+      "objet": "L'entretien de votre {vehicule}",
+      "template_email": "Bonjour {prenom},\n\nCela fait déjà quelques mois que vous roulez avec votre {vehicule} ({immatriculation}) et l'échéance d'entretien approche.\n\nNotre atelier de {concession} peut s'en charger, avec des pièces d'origine et un contrôle complet du véhicule. Nous proposons un véhicule de courtoisie selon disponibilité.\n\nDites-moi le jour qui vous arrange et je réserve le créneau.\n\nEt si un nouveau projet se dessine, sachez que la valeur de reprise de votre véhicule est aujourd'hui à un bon niveau. Je peux vous en faire l'estimation sans engagement.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
+    }
+  ]
+}{
+  "meta": {
+    "entreprise": "Arc de Triomphe Autos",
     "version": "1.0",
     "signature_par_defaut": "{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
   },
