@@ -447,6 +447,21 @@ main{ padding:var(--s-6) 0 var(--s-8); }
 }
 .drawer__foot .btn--primary{ flex:1; min-width:180px; }
 
+/* Selecteur de canal : n'apparait que sur les etapes proposant plusieurs
+   messages (ex. Mail + WhatsApp). Masque par defaut ailleurs. */
+.canaux{ display:flex; gap:var(--s-2); margin-bottom:var(--s-5); }
+.canaux[hidden]{ display:none; }
+.canal-tab{
+  flex:1; height:34px; padding:0 var(--s-3); border-radius:var(--r-md);
+  border:1px solid var(--line); background:var(--surface); color:var(--text-2);
+  font-size:var(--text-sm); font-weight:500;
+  display:inline-flex; align-items:center; justify-content:center; gap:var(--s-2);
+  transition:background var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+.canal-tab svg{ width:15px; height:15px; flex:none; }
+.canal-tab:hover{ background:var(--surface-2); }
+.canal-tab.is-active{ background:var(--ink); border-color:var(--ink); color:var(--ink-text); }
+
 .bloc{ margin-bottom:var(--s-5); }
 .bloc__head{ display:flex; align-items:center; justify-content:space-between; gap:var(--s-3); margin-bottom:var(--s-3); }
 .bloc__titre{
@@ -587,6 +602,8 @@ main{ padding:var(--s-6) 0 var(--s-8); }
     <g id="i-chevron-g"><path d="M15 5 8 12l7 7"/></g>
     <g id="i-chevron-d"><path d="M9 5l7 7-7 7"/></g>
     <g id="i-circle"><circle cx="12" cy="12" r="9"/></g>
+    <g id="i-mail"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></g>
+    <g id="i-chat"><path d="M4 4h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H8l-4 4V5a1 1 0 0 1 1-1z"/></g>
   </defs>
 </svg>
 
@@ -679,7 +696,18 @@ main{ padding:var(--s-6) 0 var(--s-8); }
   </div>
 
   <div class="drawer__body">
-    <div class="bloc">
+    <div class="canaux" id="drawer-canaux" role="group" aria-label="Choisir le canal du message" hidden>
+      <button class="canal-tab is-active" type="button" data-canal="email" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-mail"/></svg>
+        Mail
+      </button>
+      <button class="canal-tab" type="button" data-canal="whatsapp" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-chat"/></svg>
+        WhatsApp
+      </button>
+    </div>
+
+    <div class="bloc" id="bloc-objet">
       <div class="bloc__head">
         <h3 class="bloc__titre">Objet</h3>
         <button class="btn btn--sm" type="button" id="btn-copier-objet">Copier l'objet</button>
@@ -694,7 +722,7 @@ main{ padding:var(--s-6) 0 var(--s-8); }
       <div class="lecture" id="drawer-texte"></div>
       <p class="aide">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-info"/></svg>
-        <span>Les mentions en dore sont a remplacer dans Outlook apres le collage.</span>
+        <span id="drawer-aide-texte">Les mentions en dore sont a remplacer dans Outlook apres le collage.</span>
       </p>
     </div>
   </div>
@@ -916,8 +944,9 @@ main{ padding:var(--s-6) 0 var(--s-8); }
       "couleur": "rose",
       "temps_moyen": "J+1 après livraison",
       "actif": true,
-      "objet": "Merci - et bonne route avec votre {vehicule}",
-      "template_email": "Bonjour {prenom},\n\nMerci d'avoir choisi Arc de Triomphe Autos pour votre {vehicule}. J'espère que les premiers kilomètres vous ont donné satisfaction.\n\nSi un point vous semble à revoir, même minime, dites-le-moi directement : c'est plus simple à traiter maintenant.\n\nSi tout est en ordre, un avis de votre part nous aiderait beaucoup. Quelques lignes suffisent, et cela compte réellement pour l'équipe.\n\nJe reste votre contact pour la suite : entretien, question technique ou futur projet. Mon numéro direct : {telephone}.\n\nBonne route,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
+      "objet": "Quelques nouvelles de votre {vehicule}",
+      "template_email": "Bonjour {Prenom},\n\nJ'espère que vous profitez pleinement de votre {vehicule} et que vos premiers kilomètres se passent bien.\n\nToute l'équipe d'Arc de Triomphe Autos vous remercie pour votre confiance.\n\nSi vous avez la moindre question concernant votre véhicule, son utilisation ou simplement besoin d'un renseignement, n'hésitez pas à me contacter directement. Je reste bien entendu disponible après la livraison.\n\nEt si vous êtes satisfait de votre expérience avec nous, votre avis nous ferait très plaisir. Quelques mots suffisent et sont toujours précieux pour notre équipe.\n\n[Laisser un avis]\n\nJe reste également votre contact pour la suite, que ce soit pour l'entretien de votre véhicule ou pour un futur projet automobile.\n\nBonne route et à bientôt,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}",
+      "template_whatsapp": "Bonjour {prenom} 👋\n\nJe voulais prendre un petit moment pour prendre de vos nouvelles depuis la livraison de votre {vehicule}.\n\nJ'espère que vous en profitez bien et que vous êtes toujours aussi satisfait de votre choix ! 😊\n\nSi vous avez la moindre question ou besoin d'un conseil, n'hésitez surtout pas à m'écrire ici. Je reste votre contact, même après la livraison.\n\nEt si vous êtes satisfait de votre expérience chez Arc de Triomphe Autos, ça me ferait vraiment plaisir que vous partagiez votre expérience avec nous ⭐️\n\n👉 {lien_avis_google}\n\nQuelques mots suffisent, mais votre avis fait une vraie différence pour nous !\n\nAu plaisir d'avoir de vos nouvelles, et bonne route avec votre {vehicule} ! 🚗\n\n{commercial}"
     },
     {
       "id": 12,
@@ -1043,6 +1072,7 @@ function validerDonnees(donnees) {
       temps_moyen: String(brut.temps_moyen || ""),
       objet: String(brut.objet || brut.titre),
       template: String(brut.template_email),
+      templateWhatsapp: brut.template_whatsapp ? String(brut.template_whatsapp) : null,
       actif: brut.actif !== false
     });
   });
@@ -1099,7 +1129,8 @@ const etat = {
   etapes: [],           // Toutes les etapes valides et actives
   recherche: "",        // Terme de recherche courant
   etapeOuverte: null,   // Etape actuellement affichee dans le tiroir
-  dernierFocus: null    // Element a refocaliser a la fermeture du tiroir
+  dernierFocus: null,   // Element a refocaliser a la fermeture du tiroir
+  canalActif: "email"   // Canal affiche dans le tiroir : "email" ou "whatsapp"
 };
 
 /* ==========================================================================
@@ -1207,7 +1238,7 @@ function etapesVisibles() {
 
   return etat.etapes.filter(etape => normaliser([
     etape.titre, etape.description, etape.badge,
-    etape.categories.join(" "), etape.objet, etape.template
+    etape.categories.join(" "), etape.objet, etape.template, etape.templateWhatsapp || ""
   ].join(" ")).includes(terme));
 }
 
@@ -1314,6 +1345,46 @@ function defiler(sens) {
    ========================================================================== */
 
 /**
+ * Renvoie le contenu (objet + texte) du canal actuellement affiche dans le
+ * tiroir. Le canal WhatsApp n'a pas d'objet : il vaut alors null.
+ * @returns {{objet: string|null, texte: string}} Contenu du canal actif.
+ */
+function canalCourant() {
+  const etape = etat.etapeOuverte;
+  if (!etape) return { objet: "", texte: "" };
+  if (etat.canalActif === "whatsapp" && etape.templateWhatsapp) {
+    return { objet: null, texte: etape.templateWhatsapp };
+  }
+  return { objet: etape.objet, texte: etape.template };
+}
+
+/**
+ * Affiche le canal demande dans le tiroir (Mail ou WhatsApp) : bascule le
+ * contenu du bloc Objet et du message, et l'etat visuel des onglets.
+ * @param {string} canal "email" ou "whatsapp".
+ * @returns {void}
+ */
+function definirCanal(canal) {
+  etat.canalActif = canal;
+  const { objet, texte } = canalCourant();
+  const estWhatsapp = objet === null;
+
+  $("#bloc-objet").hidden = estWhatsapp;
+  $("#btn-copier-objet").hidden = estWhatsapp;
+  if (!estWhatsapp) $("#drawer-objet").innerHTML = marquerVariables(objet);
+  $("#drawer-texte").innerHTML = marquerVariables(texte);
+  $("#drawer-aide-texte").textContent = estWhatsapp
+    ? "Les mentions en dore sont a remplacer avant l'envoi sur WhatsApp."
+    : "Les mentions en dore sont a remplacer dans Outlook apres le collage.";
+
+  $$("#drawer-canaux .canal-tab").forEach(bouton => {
+    const actif = bouton.dataset.canal === canal;
+    bouton.classList.toggle("is-active", actif);
+    bouton.setAttribute("aria-pressed", String(actif));
+  });
+}
+
+/**
  * Ouvre le tiroir sur une etape donnee.
  * @param {number|string} id Identifiant de l'etape.
  * @returns {void}
@@ -1335,8 +1406,9 @@ function ouvrirTiroir(id) {
   $("#drawer-temps").textContent = etape.temps_moyen;
   $("#drawer-titre").textContent = etape.titre;
   $("#drawer-desc").textContent = etape.description;
-  $("#drawer-objet").innerHTML = marquerVariables(etape.objet);
-  $("#drawer-texte").innerHTML = marquerVariables(etape.template);
+
+  $("#drawer-canaux").hidden = !etape.templateWhatsapp;
+  definirCanal("email");
 
   drawer.classList.add("is-open");
   drawer.setAttribute("aria-hidden", "false");
@@ -1417,31 +1489,38 @@ function telechargerFichier(nom, contenu) {
 }
 
 /**
- * Telecharge le modele d'une etape au format texte.
- * @param {Object} etape Etape normalisee.
+ * Telecharge un modele au format texte.
+ * @param {number} numero Numero de l'etape.
+ * @param {string} titre Titre de l'etape, pour le nom de fichier.
+ * @param {string|null} objet Objet du message, absent pour WhatsApp.
+ * @param {string} texte Corps du message.
+ * @param {string} suffixe Suffixe optionnel du nom de fichier (ex. "whatsapp").
  * @returns {void}
  */
-function telechargerEtape(etape) {
-  const numero = String(etape.numero).padStart(2, "0");
-  telechargerFichier(
-    `${numero}-${slug(etape.titre)}.txt`,
-    `Objet : ${etape.objet}\n\n${etape.template}\n`
-  );
+function telechargerEtape(numero, titre, objet, texte, suffixe = "") {
+  const num = String(numero).padStart(2, "0");
+  const nomBase = suffixe ? `${num}-${slug(titre)}-${suffixe}` : `${num}-${slug(titre)}`;
+  const contenu = objet ? `Objet : ${objet}\n\n${texte}\n` : `${texte}\n`;
+  telechargerFichier(`${nomBase}.txt`, contenu);
   notifier("Modele telecharge");
 }
 
 /**
  * Ouvre la fenetre d'impression du navigateur, qui permet aussi
  * l'enregistrement au format PDF.
- * @param {Object} etape Etape normalisee.
+ * @param {number} numero Numero de l'etape.
+ * @param {Array<string>} categories Categories de l'etape.
+ * @param {string|null} objet Objet du message, absent pour WhatsApp.
+ * @param {string} texte Corps du message.
  * @returns {void}
  */
-function imprimerEtape(etape) {
+function imprimerEtape(numero, categories, objet, texte) {
   const fenetre = window.open("", "_blank", "width=720,height=900");
   if (!fenetre) { notifier("Autorisez les fenetres pour imprimer"); return; }
 
+  const titreAffiche = objet || texte.split("\n")[0];
   fenetre.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">
-    <title>${echapper(etape.objet)}</title>
+    <title>${echapper(titreAffiche)}</title>
     <style>
       body{font:14px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
            color:#121a16; max-width:680px; margin:48px auto; padding:0 24px;}
@@ -1453,9 +1532,9 @@ function imprimerEtape(etape) {
       footer{margin-top:32px; padding-top:16px; border-top:1px solid #e2e4de;
              font-size:11px; color:#8a948b;}
     </style></head><body>
-      <div class="eyebrow">Etape ${String(etape.numero).padStart(2, "0")} · ${echapper(etape.categories.join(" / "))}</div>
-      <h1>${echapper(etape.objet)}</h1>
-      <pre>${echapper(etape.template)}</pre>
+      <div class="eyebrow">Etape ${String(numero).padStart(2, "0")} · ${echapper(categories.join(" / "))}</div>
+      <h1>${echapper(titreAffiche)}</h1>
+      <pre>${echapper(texte)}</pre>
       <footer>Arc de Triomphe Autos · imprime le ${new Date().toLocaleDateString("fr-FR")}</footer>
     </body></html>`);
   fenetre.document.close();
@@ -1509,14 +1588,14 @@ function brancherEvenements() {
     const dl = evt.target.closest("[data-telecharger-id]");
     if (dl) {
       const etape = trouverEtape(dl.dataset.telechargerId);
-      if (etape) telechargerEtape(etape);
+      if (etape) telechargerEtape(etape.numero, etape.titre, etape.objet, etape.template);
       return;
     }
 
     const imp = evt.target.closest("[data-imprimer-id]");
     if (imp) {
       const etape = trouverEtape(imp.dataset.imprimerId);
-      if (etape) imprimerEtape(etape);
+      if (etape) imprimerEtape(etape.numero, etape.categories, etape.objet, etape.template);
     }
   });
 
@@ -1541,24 +1620,36 @@ function brancherEvenements() {
   }, { passive: false });
 
   /* --- Tiroir --- */
+  $("#drawer-canaux").addEventListener("click", (evt) => {
+    const onglet = evt.target.closest("[data-canal]");
+    if (onglet) definirCanal(onglet.dataset.canal);
+  });
+
   $("#btn-copier").addEventListener("click", async () => {
     if (!etat.etapeOuverte) return;
-    const ok = await copierTexte(etat.etapeOuverte.template);
+    const ok = await copierTexte(canalCourant().texte);
     notifier(ok ? "Message copie" : "Copie impossible, selectionnez le texte");
   });
 
   $("#btn-copier-objet").addEventListener("click", async () => {
     if (!etat.etapeOuverte) return;
-    const ok = await copierTexte(etat.etapeOuverte.objet);
+    const { objet } = canalCourant();
+    if (!objet) return;
+    const ok = await copierTexte(objet);
     notifier(ok ? "Objet copie" : "Copie impossible");
   });
 
   $("#btn-telecharger").addEventListener("click", () => {
-    if (etat.etapeOuverte) telechargerEtape(etat.etapeOuverte);
+    if (!etat.etapeOuverte) return;
+    const { objet, texte } = canalCourant();
+    const suffixe = etat.canalActif === "whatsapp" && !objet ? "whatsapp" : "";
+    telechargerEtape(etat.etapeOuverte.numero, etat.etapeOuverte.titre, objet, texte, suffixe);
   });
 
   $("#btn-imprimer").addEventListener("click", () => {
-    if (etat.etapeOuverte) imprimerEtape(etat.etapeOuverte);
+    if (!etat.etapeOuverte) return;
+    const { objet, texte } = canalCourant();
+    imprimerEtape(etat.etapeOuverte.numero, etat.etapeOuverte.categories, objet, texte);
   });
 
   $("#drawer-close").addEventListener("click", fermerTiroir);
@@ -1591,7 +1682,7 @@ function brancherEvenements() {
       const dansChamp = /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName);
       if (!selection && !dansChamp && etat.etapeOuverte) {
         evt.preventDefault();
-        copierTexte(etat.etapeOuverte.template).then(ok =>
+        copierTexte(canalCourant().texte).then(ok =>
           notifier(ok ? "Message copie" : "Copie impossible"));
       }
       return;
