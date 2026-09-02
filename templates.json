@@ -20,7 +20,7 @@
       "temps_moyen": "J+0",
       "actif": true,
       "objet": "Suite à notre échange - {vehicule}",
-      "template_email": "Bonjour {prenom} {nom},\n\nMerci pour votre appel de ce jour au sujet de la {vehicule}.\n\nJe vous confirme les points évoqués ensemble :\n- Véhicule : {vehicule}\n- Disponibilité : véhicule visible sur notre site de {concession}\n- Votre interlocuteur unique : {commercial}\n\nLa prochaine étape la plus simple est un essai, sans engagement. Nous sommes ouverts du lundi au samedi et je peux bloquer un créneau à l'heure qui vous arrange.\n\nDites-moi simplement le jour qui vous convient, ou joignez-moi directement au {telephone}.\n\nBien à vous,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
+      "template_email": "Bonjour {Prenom},\n\nMerci pour notre échange de ce jour et pour l'intérêt que vous portez à notre {vehicule}.\n\nLe véhicule est actuellement disponible dans notre concession de {concession}, où je serai ravi de vous le présenter plus en détail.\n\nSi vous le souhaitez, je vous propose de venir le/la découvrir et de prendre le temps de l'essayer, sans aucun engagement. C'est souvent le meilleur moyen de se faire une véritable idée du véhicule.\n\nNous sommes ouverts du lundi au samedi du {heure} à {heure}. Indiquez-moi simplement vos disponibilités, et je vous proposerai un créneau qui vous convient.\n\nEt bien entendu, si vous avez la moindre question d'ici là, je reste joignable directement au {telephone}.\n\nAu plaisir de vous accueillir prochainement chez Arc de Triomphe Autos.\n\nBien à vous,\n\n{Prenom NOM} {Commercial VN/VO}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
     },
     {
       "id": 2,
