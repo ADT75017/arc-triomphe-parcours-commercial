@@ -174,8 +174,8 @@
       "couleur": "green",
       "temps_moyen": "J-3 avant livraison",
       "actif": true,
-      "objet": "Remise des clés de votre {vehicule} le {date_livraison}",
-      "template_email": "Bonjour {prenom},\n\nVotre {vehicule} est prête. Je vous propose la remise des clés le {date_livraison}, à notre concession de {concession}.\n\nÀ apporter le jour J :\n- votre permis de conduire,\n- votre attestation d'assurance au numéro {immatriculation},\n- le moyen de paiement du solde,\n- la carte grise de votre ancien véhicule s'il est repris.\n\nPrévoyez environ une heure : nous ferons ensemble le tour du véhicule et je vous montrerai les principales fonctions avant votre départ.\n\nConfirmez-moi simplement que ce créneau vous convient.\n\nÀ très bientôt,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
+      "objet": "La remise des clés de votre {vehicule} - {date_livraison}",
+      "template_email": "Bonjour {prenom},\n\nBonne nouvelle : votre {vehicule} est prêt.e ! 🎉\n\nJe vous propose de nous retrouver le {date_livraison} à {heure}h dans notre concession de {concession} pour la remise des clés.\n\nPour que tout soit prêt le jour de votre livraison, pensez à prévoir :\n- votre permis de conduire ;\n- votre attestation d'assurance correspondant au véhicule {immatriculation} ;\n- le règlement du solde, si celui-ci reste à effectuer ;\n- la carte grise de votre ancien véhicule, si nous reprenons celui-ci.\n\nPrévoyez environ une heure pour ce rendez-vous. Nous prendrons le temps de faire ensemble le tour du véhicule, de vous présenter ses principales fonctionnalités et de répondre à vos dernières questions avant votre départ.\n\nAu plaisir de vous retrouver pour votre remise des clés !\n\nÀ très bientôt,\n\n{commercial}\nArc de Triomphe Autos - {concession}\n{telephone} · {email}"
     },
     {
       "id": 11,
